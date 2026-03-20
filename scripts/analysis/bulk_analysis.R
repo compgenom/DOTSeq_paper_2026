@@ -59,23 +59,23 @@ saveRDS(gr, "ref/gr_orfs.rds")
 
 # Step 2: Clean up BAM files; Prepare the counts and condition tables
 
-# bam_list <- list.files(
-#     path = "../data/ly_2024/",
-#     pattern = "Aligned.sortedByCoord.out.bam$", # can't find this pattern. Only found Aligned.sortedByCoord.out.exonic.sorted.bam
-#     recursive = TRUE,
-#     full.names = TRUE
-# )
+bam_list <- list.files(
+    path = "data/bulk/",
+    pattern = "Aligned.sortedByCoord.out.bam$",
+    recursive = TRUE,
+    full.names = TRUE
+)
 
-# gr <- readRDS("../ref/gr_orfs.rds")
-# bam_output_dir <- "../data/ly_2024/exonic_bam"
-# getExonicReads(gr = gr, bam_files = bam_list, bam_output_dir = bam_output_dir, coding_genes_only = TRUE)
+gr <- readRDS("ref/gr_orfs.rds")
+bam_output_dir <- "data/bulk/exonic_bam"
+getExonicReads(gr = gr, bam_files = bam_list, bam_output_dir = bam_output_dir, coding_genes_only = TRUE)
 
 meta <- read.table("../src/DOTSeq/inst/extdata/metadata.txt.gz"))
 names(meta) <- c("run", "strategy", "replicate", "treatment", "condition")
 cond <- meta[meta$treatment == "chx", ]
 cond$treatment <- NULL
 
-bam_files <- list.files("../data/ly_2024/exonic_bam", pattern = ".bam$", full.names = TRUE)
+bam_files <- list.files("data/bulk/exonic_bam", pattern = ".bam$", full.names = TRUE)
 bam_files <- bam_files[basename(bam_files) %in% paste0(cond$run, "Aligned.sortedByCoord.out.exonic.sorted.bam")]
 
 cnt <- countReads(gr = gr, bam_files = bam_files)

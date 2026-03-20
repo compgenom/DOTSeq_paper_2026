@@ -31,7 +31,7 @@ for i in ../data/ly_2024/rna/chx/*.fastq.gz; do
     --genomeDir ../ref/hg38_star_index \
     --readFilesIn $(dirname "$i")/$(basename "$i" .fastq.gz).trimmed.fasta.gz \
     --readFilesCommand zcat \
-    --outFileNamePrefix $(dirname "$i")/$(basename "$i" .fastq.gz) \
+    --outFileNamePrefix data/bulk/$(basename "$i" .fastq.gz) \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterMultimapNmax 1 --outFilterMatchNmin 16 \
@@ -50,7 +50,7 @@ for i in ../data/ly_2024/ribo/chx/*.fastq.gz; do
     --genomeDir ../ref/hg38_star_index \
     --readFilesIn $(dirname "$i")/$(basename "$i" .fastq.gz).trimmed.fasta.gz \
     --readFilesCommand zcat \
-    --outFileNamePrefix $(dirname "$i")/$(basename "$i" .fastq.gz) \
+    --outFileNamePrefix data/bulk/$(basename "$i" .fastq.gz) \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterMultimapNmax 1 --outFilterMatchNmin 16 \
