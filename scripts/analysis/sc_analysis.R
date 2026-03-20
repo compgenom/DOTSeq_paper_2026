@@ -115,6 +115,16 @@ mats <- setNames(vector("list", nrow(sra_sub)), sra_sub$Run)
 for (i in seq_len(nrow(sra_sub))) mats[[i]] <- read_one(sra_sub$matrix[i], sra_sub$Run[i])
 printf("Read %d per-ORF matrices.", length(mats))
 
+# Count number of cells
+num_cells <- function(m, nonempty_only = TRUE) {
+    stopifnot(inherits(m, "dgCMatrix"))
+    if (nonempty_only) sum(Matrix::colSums(m) > 0) else ncol(m)
+}
+
+for (i in seq_len(nrow(sra_sub))) sra_sub$num_cells[i] <- num_cells(mats[[i]])
+aggregate(num_cells ~ treatment, data = sra_sub, FUN = function(x) sum(x, na.rm = TRUE))
+
+
 all_orfs <- Reduce(union, lapply(mats, rownames)) |> sort()
 
 pad_rows_to <- function(M, genes) {

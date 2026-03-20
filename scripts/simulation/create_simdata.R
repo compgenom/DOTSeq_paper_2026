@@ -37,14 +37,12 @@ if (is.null(opt$count_table) || is.null(opt$annotation) || is.null(opt$gcoeff) |
   )
 }
 
-# Load example data from DOTSeq
-dir <- system.file("extdata", package = "DOTSeq")
 gr <- readRDS(opt$annotation)
 cnt <- readRDS(opt$count_table)
 cnt <- as.data.frame(cnt)
 names(cnt) <- gsub(".*(SRR[0-9]+).*", "\\1", names(cnt))
 
-meta <- read.table(file.path(dir, "metadata.txt.gz"))
+meta <- read.table("../src/DOTSeq/inst/extdata/metadata.txt.gz"))
 names(meta) <- c("run", "strategy", "replicate", "treatment", "condition")
 cond <- meta[meta$treatment == "chx", ]
 cond$treatment <- NULL
