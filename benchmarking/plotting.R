@@ -21,9 +21,8 @@ output_dir <- "results/benchmarking/figures/"
 if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
 # FDR-TPR plots (Figure 4)
-# # Please note the scale might be different from the manuscript
-# # There will be extra plots instead of just 4 shown in Figure 4 in the manuscript. To generate the exact 4 plots in Figure 4, please set the following parameters instead.
-# # The 4 exact combinations for Figure 4:
+# Please note the scale might be different from the manuscript
+# To reproduce the exact 4 plots shown in Figure 4 of the manuscript, use the following specific parameter combinations:
 # param_grid <- data.frame(
 #   scenario    = rep("uORF_up_mORF_down", 4),
 #   gcoeff      = c(0.5, 1, 1.5, 2),

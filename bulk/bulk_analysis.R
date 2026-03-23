@@ -93,50 +93,8 @@ te <- results$DTE[results$DTE$contrast == "Mitotic_Cycling - Interphase", ]
 results <- merge(ou, te, by = c("orf_id", "contrast"), all = TRUE)
 
 # Step 5: Visualisation using the plotDOT() function
-pdf("results/bulk/figures/venn.pdf", width = 3, height = 2.5)
-plotDOT(plot_type = "venn", results = results, force_new_device = FALSE)
-dev.off()
 
-pdf("results/bulk/figures/composite.pdf", width = 4, height = 4)
-plotDOT(
-    plot_type = "composite", 
-    results = results, 
-    plot_params = list(color_by = "significance", legend_position = "bottomright"),
-    force_new_device = FALSE
-)
-dev.off()
-
-pdf("results/bulk/figures/composite_orf_type.pdf", width = 5, height = 5)
-plotDOT(
-    plot_type = "composite", 
-    results = results, 
-    data = getDOU(d), 
-    plot_params = list(color_by = "orf_type", legend_position = "bottomright"),
-    force_new_device = FALSE
-)
-dev.off()
-
-pdf("results/bulk/figures/volcano.pdf", width = 4, height = 4)
-mapping <- plotDOT(
-    plot_type = "volcano", 
-    results = results,
-    id_mapping = TRUE,
-    plot_params = list(color_by = "significance", top_hits = 3, legend_position = "topright"),
-    force_new_device = FALSE
-)
-dev.off()
-
-pdf("results/bulk/figures/volcano_orf_type.pdf", width = 5, height = 5)
-plotDOT(
-    plot_type = "volcano", 
-    results = results,
-    data = getDOU(d),
-    id_mapping = mapping,
-    plot_params = list(color_by = "orf_type", top_hits = 3, legend_position = "top"),
-    force_new_device = FALSE
-)
-dev.off()
-
+# Figure 2(A)
 pdf("results/bulk/figures/heatmap.pdf", width = 4, height = 9)
 plotDOT(
     plot_type = "heatmap", 
@@ -148,6 +106,19 @@ plotDOT(
 )
 dev.off()
 
+# Figure 2(B)
+pdf("results/bulk/figures/volcano_orf_type.pdf", width = 5, height = 5)
+plotDOT(
+    plot_type = "volcano", 
+    results = results,
+    data = getDOU(d),
+    id_mapping = mapping,
+    plot_params = list(color_by = "orf_type", top_hits = 3, legend_position = "top"),
+    force_new_device = FALSE
+)
+dev.off()
+
+# Figure 2(C)
 pdf("results/bulk/figures/usage.pdf", width = 3.5, height = 8)
 orderby <- c("Mitotic_Cycling", "Mitotic_Arrest", "Interphase")
 id <- "CSDE1"
@@ -157,6 +128,22 @@ plotDOT(
     gene_id = id, 
     id_mapping = mapping, 
     plot_params = list(order_by = orderby),
+    force_new_device = FALSE
+)
+dev.off()
+
+# Figure 2(D)
+pdf("results/bulk/figures/venn.pdf", width = 3, height = 2.5)
+plotDOT(plot_type = "venn", results = results, force_new_device = FALSE)
+dev.off()
+
+# Figure 2(E)
+pdf("results/bulk/figures/composite_orf_type.pdf", width = 5, height = 5)
+plotDOT(
+    plot_type = "composite", 
+    results = results, 
+    data = getDOU(d), 
+    plot_params = list(color_by = "orf_type", legend_position = "bottomright"),
     force_new_device = FALSE
 )
 dev.off()
