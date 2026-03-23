@@ -1,0 +1,83 @@
+Bootstrap: docker
+From: bioconductor/bioconductor_docker:3.22-R-4.5.2
+
+#latest addition is sratools and RiboDiff (22/03/26)
+
+%post
+    # ===============================
+    # 1. Install Miniconda2 (Python 2) for RiboDiff
+    # ===============================
+    curl -OL https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh
+    bash Miniconda2-latest-Linux-x86_64.sh -b -p /opt/miniconda2
+
+    git clone https://github.com/ratschlab/RiboDiff.git /opt/RiboDiff
+    
+    # ===============================
+    # 2. Install Miniconda3 (Python 3) for cutadapt + STAR + sratools + nextflow
+    # ===============================
+    curl -OL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3
+
+    # Accept TOS for non-interactive builds
+    /opt/miniconda3/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+    /opt/miniconda3/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
+    /opt/miniconda3/bin/conda config --set channel_priority strict
+    
+    /opt/miniconda3/bin/conda create -y -n bioenv python=3.10 cutadapt=4.5 star sra-tools nextflow -c conda-forge -c bioconda  
+    
+    ## Install Nextflow from bioconda (auto-includes Java)
+    #/opt/miniconda3/bin/conda install -n bioenv -y bioconda::nextflow
+    
+    /opt/miniconda3/bin/conda clean -afy
+    
+    # ===============================
+    # 3. Install R and DOTSeq packages
+    # ===============================
+    Rscript -e '
+    dotseq_lib <- "/usr/local/lib/R/DOTSeq"
+    dir.create(dotseq_lib, recursive = TRUE, showWarnings = TRUE)
+    .libPaths(c(dotseq_lib, .libPaths()))
+    
+    install.packages("remotes", repos="https://cloud.r-project.org")
+    remotes::install_github("compgenom/DOTSeq", lib=dotseq_lib, force=TRUE)
+    
+    # CRAN packages
+    install.packages(c(
+      "Seurat","SeuratObject","sp","aricode","FNN","glmmTMB","emmeans",
+      "splines","igraph","scales","ggExtra","dplyr","tidyr","Matrix",
+      "S4Vectors","GenomicRanges","SingleCellExperiment","ggplot2",
+      "ggsignif","magick","rmarkdown","knitr","optparse","devtools","testthat"
+    ), repos="https://cloud.r-project.org", lib=dotseq_lib)
+    
+    # Bioconductor packages
+    if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager", lib=dotseq_lib)
+    BiocManager::install(c(
+      "zellkonverter","anota2seq","iCOBRA","BSgenome.Hsapiens.UCSC.hg38",
+      "TxDb.Hsapiens.UCSC.hg38.knownGene","org.Hs.eg.db","DHARMa",
+      "BiocCheck","pasillaBamSubset","eulerr"
+    ), lib=dotseq_lib, ask=FALSE)
+    '
+    
+    # ===============================
+    # 4. Install xtail and riborex
+    # ===============================
+    git clone https://github.com/xryanglab/xtail.git /opt/xtail
+    sed -i "s/\\[at\\]/@/g" /opt/xtail/DESCRIPTION
+    Rscript -e 'devtools::install_local("/opt/xtail")'
+    
+    git clone https://github.com/smithlabcode/riborex.git /opt/riborex
+    Rscript -e 'devtools::install_local("/opt/riborex")'
+    
+    # ===============================
+    # 5. Cleanup
+    # ===============================
+    rm -rf ./Miniconda2-latest-Linux-x86_64.sh ./Miniconda3-latest-Linux-x86_64.sh /opt/xtail /opt/riborex
+
+%environment
+    # Miniconda2 + Miniconda3 bioenv environment + Nextflow in PATH
+    export PATH=/opt/miniconda2/bin:/opt/miniconda3/envs/bioenv/bin:/opt/nextflow:$PATH
+    
+    # Use custom R library first
+    export R_LIBS="/usr/local/lib/R/DOTSeq:$R_LIBS"
+    export LC_ALL=C

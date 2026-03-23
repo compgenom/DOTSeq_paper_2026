@@ -18,14 +18,9 @@ suppressPackageStartupMessages({
     library(S4Vectors)
     library(GenomicRanges)
     library(SingleCellExperiment)
-    library(zellkonverter)
-    library(Seurat)
-    library(SeuratObject) 
-    library(aricode)
     library(ggplot2)
     library(RColorBrewer)
     library(viridis)
-    library(ggExtra)
     library(dplyr)
     library(tidyr)
     library(FNN)
@@ -34,14 +29,13 @@ suppressPackageStartupMessages({
     library(DHARMa)
     library(splines)
     library(purrr)
-    library(igraph)
     library(scales)
 })
 
 # Step 1: Generate the ORF-level annotation using DOTSeq's getORF() function
 
-annotation <- "../ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz"
-sequences <- "../ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz"
+annotation <- "ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz"
+sequences <- "ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz"
 
 gr <- getORFs(
     sequences,
@@ -59,8 +53,9 @@ saveRDS(gr, "ref/gr_orfs.rds")
 
 # Step 2: Clean up BAM files; Prepare the counts and condition tables
 
+
 bam_list <- list.files(
-    path = "data/bulk/",
+    path = "data/bulk",
     pattern = "Aligned.sortedByCoord.out.bam$",
     recursive = TRUE,
     full.names = TRUE
@@ -70,13 +65,13 @@ gr <- readRDS("ref/gr_orfs.rds")
 bam_output_dir <- "data/bulk/exonic_bam"
 getExonicReads(gr = gr, bam_files = bam_list, bam_output_dir = bam_output_dir, coding_genes_only = TRUE)
 
-meta <- read.table("../src/DOTSeq/inst/extdata/metadata.txt.gz"))
+meta <- read.table("ref/metadata.txt.gz")
 names(meta) <- c("run", "strategy", "replicate", "treatment", "condition")
 cond <- meta[meta$treatment == "chx", ]
 cond$treatment <- NULL
 
-bam_files <- list.files("data/bulk/exonic_bam", pattern = ".bam$", full.names = TRUE)
-bam_files <- bam_files[basename(bam_files) %in% paste0(cond$run, "Aligned.sortedByCoord.out.exonic.sorted.bam")]
+bam_files <- list.files("data/bulk/exonic_bam", pattern = ".bam$", full.names = TRUE) # get it from the previous runs by Lim because I can't install STAR and cutadapt at the moment
+bam_files <- bam_files[basename(bam_files) %in% paste0(cond$run, "_Aligned.sortedByCoord.out.exonic.sorted.bam")]
 
 cnt <- countReads(gr = gr, bam_files = bam_files)
 names(cnt) <- gsub(".*(SRR[0-9]+).*", "\\1", names(cnt))
