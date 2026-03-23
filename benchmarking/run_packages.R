@@ -1,5 +1,15 @@
 #!/usr/bin/env Rscript
 
+# =============================================================================
+# Script: Benchmarking analysis
+# =============================================================================
+# Input files:
+# - Simulated datasets generated from the create_simdata.sh 
+#
+# Notes:
+# - Paths to input files may need to be adjusted for your system
+# =============================================================================
+
 library(SummarizedExperiment)
 library(iCOBRA)
 library(xtail)

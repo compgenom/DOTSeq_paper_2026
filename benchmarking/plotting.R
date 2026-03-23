@@ -1,5 +1,16 @@
 #!/usr/bin/env Rscript
 
+# =============================================================================
+# Script: Plotting the results from benchmarking analysis
+# =============================================================================
+# Input files:
+# - iCOBRA RDS generated from the run_packages.R
+#
+# Notes:
+# - Paths to input files may need to be adjusted for your system
+# - There may be extra figures generated. 
+# =============================================================================
+
 library(iCOBRA)
 library(ggplot2)
 library(dplyr)
@@ -9,7 +20,16 @@ output_dir <- "results/benchmarking/figures/"
 
 if (!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
 
-# FDR-TPR plots
+# FDR-TPR plots (Figure 4)
+# # Please note the scale might be different from the manuscript
+# # There will be extra plots instead of just 4 shown in Figure 4 in the manuscript. To generate the exact 4 plots in Figure 4, please set the following parameters instead.
+# # The 4 exact combinations for Figure 4:
+# param_grid <- data.frame(
+#   scenario    = rep("uORF_up_mORF_down", 4),
+#   gcoeff      = c(0.5, 1, 1.5, 2),
+#   size_factor = c(0.5, 1, 1, 2),
+#   min_size    = c(1, 1, 1, 1)
+# )
 
 regulation_type <- c("uORF_up_mORF_down")
 gcoeff_vals <- seq(0.5, 2, by = 0.5)
@@ -45,7 +65,7 @@ for (i in seq_len(nrow(param_grid))) {
 }
 
 
-# Boxplot
+# Boxplot (Figure 5)
 
 regulation_type <- c("uORF_up_mORF_down")
 gcoeff_vals <- seq(0.5, 2, by = 0.5)
@@ -102,7 +122,7 @@ ggsave(
   height = 5
 )
 
-# p-value hist plot
+# p-value hist plot (Figure 6)
 
 regulation_type <- c("uORF_up_mORF_down")
 gcoeff_vals <- seq(0.5, 2, by = 0.5)
