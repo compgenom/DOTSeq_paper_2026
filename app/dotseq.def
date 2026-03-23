@@ -1,8 +1,6 @@
 Bootstrap: docker
 From: bioconductor/bioconductor_docker:3.22-R-4.5.2
 
-#latest addition is sratools and RiboDiff (22/03/26)
-
 %post
     # ===============================
     # 1. Install Miniconda2 (Python 2) for RiboDiff
@@ -47,8 +45,8 @@ From: bioconductor/bioconductor_docker:3.22-R-4.5.2
       "Seurat","SeuratObject","sp","aricode","FNN","glmmTMB","emmeans",
       "splines","igraph","scales","ggExtra","dplyr","tidyr","Matrix",
       "S4Vectors","GenomicRanges","SingleCellExperiment","ggplot2",
-      "ggsignif","magick","rmarkdown","knitr","optparse","devtools","testthat"
-    ), repos="https://cloud.r-project.org", lib=dotseq_lib)
+      "ggsignif","magick","rmarkdown","knitr","optparse","devtools","testthat",
+      "leidenbase", "future", "glmGamPoi"), repos="https://cloud.r-project.org", lib=dotseq_lib)
     
     # Bioconductor packages
     if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager", lib=dotseq_lib)
