@@ -16,26 +16,32 @@ Reproducible scripts and resources for the **DOTSeq 2026** manuscript.
 
 ## Workflow / How to Start
 
-1. **Set up the computational environment**  
+1. **Set up the computational environment**
+   
    Build the Apptainer image to ensure all dependencies are installed:
 
    ```bash
    apptainer build app/dotseq.sif app/dotseq.def
    ```
-2. **Download reference genome and annotations**
-    Run the preprocessing scripts for reference data:
+2. **Download reference genome, annotations and SRA files**
+
+   Run the preprocessing scripts for reference data:
 
    ```bash
    bash ref.sh
+   bash bulk/sra_downloads_bulk.sh
+   bash sc/sra_downloads_sc.sh
    ```
 3. **Preprocess raw sequencing data**
-    Before any analysis, raw reads need to be quality controlled, trimmed, and aligned:
+   
+   Before any analysis, raw reads need to be quality controlled, trimmed, and aligned:
    
    ```bash
    bash sc/preprocessing_sc.sh # single cell dataset (using Nextflow)
    bash bulk/preprocessing_bulk.sh # bulk dataset
    ```
 4. **Run analysis scripts**
+
    Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate to gene-level counts, and generate visualizations:
 
    ```bash
@@ -43,6 +49,7 @@ Reproducible scripts and resources for the **DOTSeq 2026** manuscript.
    Rscript bulk/bulk_analysis.R # bulk dataset
    ```
 5. **Benchmarking**
+
    Simulated datasets must be generated prior to benchmarking analysis.
    ```bash
    bash benchmarking/create_simdata.sh
