@@ -42,15 +42,14 @@ bash sc/sra_downloads_sc.sh
    
 ### 4. Analysing the bulk datasets
    
-Before the analysis, raw reads need to be quality controlled, trimmed, and aligned to produce an alignment file.
+Before analysis, raw reads must be quality controlled, trimmed, and aligned to generate alignment files. Precomputed alignment files (`Aligned.sortedByCoord.out.bam`) are available on [Zenodo](https://doi.org/10.5281/zenodo.19266548) if you wish to skip this preprocessing step.
 
 ```bash
 bash bulk/preprocessing_bulk.sh
 ```
-These `.bam` alignment files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548), if you wish to skip the preprocessing step.
 
-Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate to gene-level counts, and generate visualizations.
-By default, the script uses alignment files `.bam` generated from preprocessing as input for read counting via the `countReads()` function in [DOTSeq](https://github.com/compgenom/DOTSeq/tree/main).
+Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate gene-level counts, and generate visualisations.
+By default, the pipeline uses the `Aligned.sortedByCoord.out.bam` files to extract exonic reads using `getExonicReads()` from [DOTSeq](https://github.com/compgenom/DOTSeq/tree/main), producing `_Aligned.sortedByCoord.out.exonic.sorted.bam`. These filtered BAM files are then used for read counting via [DOTSeq](https://github.com/compgenom/DOTSeq/tree/main)'s `countReads()` function. Precomputed exonic BAM files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
 
 ```bash
 Rscript bulk/bulk_analysis.R \
@@ -63,29 +62,21 @@ Rscript bulk/bulk_analysis.R \
   -o results/bulk
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `bulk.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place it in:
-
-```bash
-data/bulk/quantification
-```
-
-and run:
+Alternatively, to start from precomputed ORF read counts, download the `bulk.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place it in `data/bulk/quantification` and run:
 
 ```bash
 Rscript bulk/bulk_analysis.R \
   -ss 2
   -gr ref/gr_orfs.rds \
-  -mat data/bulk/quantification/bulk.rds \
+  -mat data/bulk/quantification \
   -o results/bulk
 ```
    
 ### 5. Analysing the single-cell datasets
 
-To reproduce the manuscript figures, use precomputed alignment files `.bam` available on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in:
+The preprocessing step to generate the alignment files `.bam` was done using a modified Nextflow pipeline from [scRiboSeq_manuscript](https://github.com/mvanins/scRiboSeq_manuscript). This modified pipeline will be provided in a separate repositorry.
 
-```bash
-data/sc/alignment
-```
+To reproduce the manuscript figures, download the precomputed alignment files `_Aligned.sortedByCoord.out_CB.bam` from on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
 
 By default, the script starts from the read counting step. The recommended UMI threshold is 100, but this can be adjusted.
 
@@ -101,13 +92,7 @@ Rscript sc/sc_analysis.R \
   -o results/sc
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place it in:
-
-```bash
-data/sc/quantification
-```
-
-and run:
+Alternatively, to start from precomputed ORF read counts, download the `.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place them in `data/sc/quantification` and run:
 
 ```bash
 Rscript sc/sc_analysis.R \

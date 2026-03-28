@@ -73,3 +73,5 @@ for i in data/bulk/ribo/chx/*.fastq.gz; do
     --alignEndsType EndToEnd \
     --outSAMattributes All
 done
+
+

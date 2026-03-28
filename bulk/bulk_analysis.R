@@ -119,7 +119,7 @@ if (opt$start == 1) {
         annotation = gr
     )
   d <- DOTSeq(datasets = d)
-  saveRDS(d, opt$mat_dir)
+  saveRDS(d, file.path(opt$mat_dir, "bulk.rds"))
 }
 
 if (opt$start <=2) {
@@ -128,7 +128,7 @@ if (opt$start <=2) {
   }
     
     # Step 4: Extract and inspect results from DOTSeq using the getContrasts() function
-    d <- readRDS(opt$mat_dir)
+    d <- readRDS(file.path(opt$mat_dir, "bulk.rds"))
     
     results <- getContrasts(d, type = "interaction")
     ou <- results$DOU[results$DOU$contrast == "Mitotic_Cycling - Interphase", ]
