@@ -7,7 +7,7 @@ Reproducible scripts and resources for the manuscript.
 ## Contents
 
 - **Apptainer**: [app/](app/) — Build the container from an Apptainer definition file  
-- **Reference Genome**: [ref/ref.sh](ref/ref.sh) — Contains scripts to download reference annotations and transcript files, as well as metadata for both bulk and single-cell analyses  
+- **Reference Genome**: [ref/](ref/) — Contains scripts to download reference annotations and transcript files, as well as metadata for both bulk and single-cell analyses  
 - **Bulk Datasets**: [bulk/](bulk/) — Scripts for bulk dataset analysis  
 - **Single-cell Datasets**: [sc/](sc/) — Quantification, aggregation, and visualization of single-cell Ribo-seq data  
 - **Benchmarking**: [benchmarking/](benchmarking/) — Scripts for generating simulated datasets and benchmarking DOTSeq across conditions  
