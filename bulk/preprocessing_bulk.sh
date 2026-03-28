@@ -20,11 +20,10 @@ set -euo pipefail
 # - Paths to input files may need to be adjusted for your system
 # =============================================================================
 
-mkdir -p data/bulk/rna
-mkdir -p data/bulk/ribo
+mkdir -p data/bulk/alignment
 
 # RNA processing
-for i in ../../../dotseq/data/ly_2024/rna/chx/*.fastq.gz; do
+for i in data/bulk/rna/chx/*.fastq.gz; do
   [ -e "$i" ] || continue
 
   base=$(basename "$i" .fastq.gz)
@@ -35,10 +34,10 @@ for i in ../../../dotseq/data/ly_2024/rna/chx/*.fastq.gz; do
 
   STAR --runMode alignReads \
     --runThreadN 32 \
-    --genomeDir ../../../dotseq/ref/hg38_star_index \
+    --genomeDir ref/hg38_star_index \
     --readFilesIn data/bulk/rna/${base}.trimmed.fasta.gz \
     --readFilesCommand zcat \
-    --outFileNamePrefix data/bulk/rna/${base}_ \
+    --outFileNamePrefix data/bulk/alignment/${base}_ \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterType BySJout \
@@ -50,7 +49,7 @@ for i in ../../../dotseq/data/ly_2024/rna/chx/*.fastq.gz; do
 done
 
 # Ribo processing
-for i in ../../../dotseq/data/ly_2024/ribo/chx/*.fastq.gz; do
+for i in data/bulk/ribo/chx/*.fastq.gz; do
   [ -e "$i" ] || continue # if file doesn't exist it will skip.
 
   base=$(basename "$i" .fastq.gz)
@@ -61,10 +60,10 @@ for i in ../../../dotseq/data/ly_2024/ribo/chx/*.fastq.gz; do
 
   STAR --runMode alignReads \
     --runThreadN 32 \
-    --genomeDir ../../../dotseq/ref/hg38_star_index \
+    --genomeDir ref/hg38_star_index \
     --readFilesIn data/bulk/ribo/${base}.trimmed.fasta.gz \
     --readFilesCommand zcat \
-    --outFileNamePrefix data/bulk/ribo/${base}_ \
+    --outFileNamePrefix data/bulk/alignment/${base}_ \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterType BySJout \

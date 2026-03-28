@@ -15,18 +15,21 @@ set -euo pipefail
 # - Paths to input files may need to be adjusted for your system
 # =============================================================================
 
+mkdir -p data/bulk/rna
+mkdir -p data/bulk/ribo
+
 # RNA download
 for srr in SRR24230462 SRR24230466 SRR24230472 SRR24230474 SRR24230477 SRR24230479; do
-    fasterq-dump "$srr" --threads 16 -O ../../../dotseq/data/ly_2024/rna/chx
-    pigz -p 16 ../../../dotseq/data/ly_2024/rna/chx/"$srr".fastq
+    fasterq-dump "$srr" --threads 16 -O data/bulk/rna/chx
+    pigz -p 16 data/bulk/rna/chx/"$srr".fastq
 done
 
 echo "All RNA-seq downloads completed."
 
 # Ribo download
 for srr in SRR24230465 SRR24230467 SRR24230469 SRR24230471 SRR24230480 SRR24230482; do
-    fasterq-dump "$srr" --threads 16 -O ../../../dotseq/data/ly_2024/ribo/chx
-    pigz -p 16 ../../../dotseq/data/ly_2024/ribo/chx/"$srr".fastq
+    fasterq-dump "$srr" --threads 16 -O data/bulk/ribo/chx
+    pigz -p 16 data/bulk/ribo/chx/"$srr".fastq
 done
 
 echo "All Ribo-seq downloads completed."
