@@ -78,7 +78,7 @@ The preprocessing step to generate the alignment files `.bam` was done using a m
 
 To reproduce the manuscript figures, download the precomputed alignment files `_Aligned.sortedByCoord.out_CB.bam` from on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
 
-By default, the script starts from the read counting step. The recommended UMI threshold is 100, but this can be adjusted.
+By default, the script starts from the read counting step. The recommended UMI threshold is 50, but this can be adjusted.
 
 ```bash
 Rscript sc/sc_analysis.R \
@@ -88,7 +88,7 @@ Rscript sc/sc_analysis.R \
   -gr ref/gr_orfs.rds
   -bam data/sc/alignment \
   -mat data/sc/quantification \
-  -umi 100 \
+  -umi 50 \
   -o results/sc
 ```
 
@@ -99,7 +99,7 @@ Rscript sc/sc_analysis.R \
   -ss 2
   -gr ref/gr_orfs.rds \
   -mat data/sc/quantification \
-  -umi 100 \
+  -umi 50 \
   -o results/sc
 ```
    

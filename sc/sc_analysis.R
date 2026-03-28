@@ -60,7 +60,7 @@ parser$add_argument("-mat", "--mat-dir", type = "character",
                     default = "data/sc/quantification")
 
 parser$add_argument("-umi", "--umi-thr", type = "integer",
-                    default = 100)
+                    default = 50)
 
 parser$add_argument("-o", "--out-dir", type = "character",
                     default = "results/sc")
@@ -117,18 +117,33 @@ if (opt$start <=2) {
   `%||%` <- function(a, b) if (!is.null(a)) a else b
   printf <- function(...) cat(sprintf(...), "\n")
   
+  selected_runs <- c(
+    "SRR13125084", "SRR13125088", "SRR13125092", "SRR13125094",
+    "SRR13125096", "SRR13125097", "SRR13125102", "SRR13125103",
+    "SRR13125104", "SRR14530593", "SRR14530595", "SRR14530596",
+    "SRR14530602", "SRR14530605", "SRR14530606")
+  
   ## SRA meta (expects: Run, cell_type, treatment, ...)
   sra <- read.csv("ref/SraRunTable_PRJNA680481.csv")
   sra <- sra[sra$cell_type == "hTERT RPE-1", , drop = FALSE]
-  
+
   ## Per-ORF matrices named "<Run>_Aligned.sortedByCoord.out_CB.mat.rds"
-  rds_files <- list.files(opt$mat_dir, pattern = "_Aligned\\.sortedByCoord\\.out_CB\\.mat\\.rds$", full.names = TRUE)
+  rds_files <- file.path(matrix_dir, paste0(selected_runs, "_Aligned.sortedByCoord.out_CB.mat.rds"))
   if (!length(rds_files)) stop("No per-ORF .rds matrices found.")
-  mats_acc  <- vapply(strsplit(basename(rds_files), "_"), `[`, character(1), 1)
-  sra_sub <- sra[sra$Run %in% mats_acc, , drop = FALSE]
-  sra_sub$matrix <- file.path(opt$mat_dir, paste0(sra_sub$Run, "_Aligned.sortedByCoord.out_CB.mat.rds"))
+  # Only keep runs present in sra
+  sra_sub <- sra[sra$Run %in% selected_runs, , drop = FALSE]
+  sra_sub$matrix <- file.path(matrix_dir, paste0(sra_sub$Run, "_Aligned.sortedByCoord.out_CB.mat.rds"))
   stopifnot(nrow(sra_sub) > 0, all(file.exists(sra_sub$matrix)))
   printf("Included runs: %d", nrow(sra_sub))
+    
+  # ## Per-ORF matrices named "<Run>_Aligned.sortedByCoord.out_CB.mat.rds"
+  # rds_files <- list.files(opt$mat_dir, pattern = "_Aligned\\.sortedByCoord\\.out_CB\\.mat\\.rds$", full.names = TRUE)
+  # if (!length(rds_files)) stop("No per-ORF .rds matrices found.")
+  # mats_acc  <- vapply(strsplit(basename(rds_files), "_"), `[`, character(1), 1)
+  # sra_sub <- sra[sra$Run %in% mats_acc, , drop = FALSE]
+  # sra_sub$matrix <- file.path(opt$mat_dir, paste0(sra_sub$Run, "_Aligned.sortedByCoord.out_CB.mat.rds"))
+  # stopifnot(nrow(sra_sub) > 0, all(file.exists(sra_sub$matrix)))
+  # printf("Included runs: %d", nrow(sra_sub))
   
   # Step 4: Load and merge per-ORF matrices with unified feature space
   
