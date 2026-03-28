@@ -1,6 +1,6 @@
 # DOTSeq enables genome-wide detection of differential ORF usage
 
-Reproducible scripts and resources for the manuscript.
+Reproducible scripts and resources for the [manuscript](https://doi.org/10.1101/2025.09.24.678201).
 
 ---
 
@@ -61,7 +61,7 @@ Rscript bulk/bulk_analysis.R \
   -o results/bulk
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `d.rds` file from Zenodo, place it in:
+Alternatively, to start from precomputed ORF read counts, download the `d.rds` file from [Zenodo](10.5281/zenodo.19266548), place it in:
 
 ```bash
 data/bulk/quantification
@@ -79,7 +79,7 @@ Rscript bulk/bulk_analysis.R \
    
 ### 5. Analysing the single-cell datasets
 
-To reproduce the manuscript figures, use precomputed alignment files (.bam) available on Zenodo and place them in:
+To reproduce the manuscript figures, use precomputed alignment files `.bam` available on [Zenodo](10.5281/zenodo.19266548) and place them in:
 
 ```bash
 data/sc/alignment
@@ -99,7 +99,7 @@ Rscript sc/sc_analysis.R \
   -o results/sc
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the .rds file from Zenodo, place it in:
+Alternatively, to start from precomputed ORF read counts, download the `.rds` file from [Zenodo](10.5281/zenodo.19266548), place it in:
 
 ```bash
 data/sc/quantification
