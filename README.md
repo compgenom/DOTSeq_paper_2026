@@ -25,12 +25,13 @@ cd DOTSeq_paper_2026
 
 ### 2. Set up the computational environment
    
-Build the Apptainer image to ensure all dependencies are installed:
+Build the Apptainer image to ensure all dependencies are installed and enter the apptainer image:
 
 ```bash
 apptainer build app/dotseq.sif app/dotseq.def
+apptainer shell app/dotseq.sif
 ```
-   
+
 ### 3. Download reference genome, annotation files and raw read files
 
 ```bash
