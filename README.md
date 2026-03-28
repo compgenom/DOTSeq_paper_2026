@@ -57,16 +57,23 @@ Rscript bulk/bulk_analysis.R \
   -s ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz
   -gr ref/gr_orfs.rds \
   -bam data/bulk/alignment \
+  -mat data/bulk/quantification \
   -o results/bulk
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `d.rds` file from Zenodo and run:
+Alternatively, to start from precomputed ORF read counts, download the `d.rds` file from Zenodo, place it in:
+
+```bash
+data/bulk/quantification
+```
+
+and run:
 
 ```bash
 Rscript bulk/bulk_analysis.R \
   -ss 2
   -gr ref/gr_orfs.rds \
-  -mat data/bulk/alignment \
+  -mat data/bulk/quantification \
   -o results/bulk
 ```
    
@@ -92,7 +99,7 @@ Rscript sc/sc_analysis.R \
   -o results/sc
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the .rds file from Zenodo (link), place it in:
+Alternatively, to start from precomputed ORF read counts, download the .rds file from Zenodo, place it in:
 
 ```bash
 data/sc/quantification
@@ -104,7 +111,8 @@ and run:
 Rscript sc/sc_analysis.R \
   -ss 2
   -gr ref/gr_orfs.rds \
-  -mat data/sc/alignment \
+  -mat data/sc/quantification \
+  -umi 100 \
   -o results/sc
 ```
    
