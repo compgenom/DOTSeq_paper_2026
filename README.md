@@ -1,20 +1,19 @@
 # DOTSeq enables genome-wide detection of differential ORF usage
 
-Reproducible scripts and resources for the [manuscript](https://doi.org/10.1101/2025.09.24.678201).
+This repository contains reproducible scripts for the [manuscript](https://doi.org/10.1101/2025.09.24.678201).
+All precomputed datasets are available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
 
----
-
-## Contents
+## CONTENTS
 
 - **Apptainer**: [app/](app/) — Build the container from an Apptainer definition file  
 - **Reference Genome**: [ref/](ref/) — Contains scripts to download reference annotations and transcript files, as well as metadata for both bulk and single-cell analyses  
-- **Bulk Datasets**: [bulk/](bulk/) — Scripts for bulk dataset analysis  
-- **Single-cell Datasets**: [sc/](sc/) — Quantification, aggregation, and visualization of single-cell Ribo-seq data  
+- **Bulk Datasets**: [bulk/](bulk/) — Scripts to analyse bulk datasets from [Ly et al 2024](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA957808)
+- **Single-cell Datasets**: [sc/](sc/) — Quantification, aggregation, and visualization of single-cell Ribo-seq data from [VanInsberghe 2021](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA680481) 
 - **Benchmarking**: [benchmarking/](benchmarking/) — Scripts for generating simulated datasets and benchmarking DOTSeq across conditions  
 
 ---
 
-## Workflow / How to Start
+## WORKFLOW
 
 ### 1. Clone the repository
 
@@ -49,7 +48,7 @@ bash bulk/preprocessing_bulk.sh
 These `.bam` alignment files are also available on [Zenodo](10.5281/zenodo.19266548), if you wish to skip the preprocessing step.
 
 Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate to gene-level counts, and generate visualizations.
-By default, the script uses alignment files `.bam` generated from preprocessing as input for read counting via the `countReads()` function in `DOTSeq`.
+By default, the script uses alignment files `.bam` generated from preprocessing as input for read counting via the `countReads()` function in [DOTSeq](https://github.com/compgenom/DOTSeq/tree/main).
 
 ```bash
 Rscript bulk/bulk_analysis.R \
@@ -131,3 +130,12 @@ Then run the benchmarking pipeline:
 Rscript benchmarking/run_packages.R
 Rscript benchmarking/plotting.R
 ```
+
+## CONTACTS AND BUG REPORTS
+- Chun Shen Lim: 
+chunshen [dot] lim [at] otago [dot] ac [dot] nz
+- Gabrielle Chieng: 
+gabrielle [dot] chieng [at] postgrad [dot] otago [dot] ac [dot] nz
+
+## CITATION
+compgenom. DOTSeq: Genome-wide detection of differential ORF usage. 2026. GitHub, https://github.com/compgenom/DOTSeq.
