@@ -1,6 +1,7 @@
 # DOTSeq enables genome-wide detection of differential ORF usage
 
 This repository contains reproducible scripts for the [manuscript](https://doi.org/10.1101/2025.09.24.678201).
+
 All precomputed datasets are available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
 
 ## CONTENTS
@@ -45,7 +46,7 @@ Before the analysis, raw reads need to be quality controlled, trimmed, and align
 ```bash
 bash bulk/preprocessing_bulk.sh
 ```
-These `.bam` alignment files are also available on [Zenodo](10.5281/zenodo.19266548), if you wish to skip the preprocessing step.
+These `.bam` alignment files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548), if you wish to skip the preprocessing step.
 
 Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate to gene-level counts, and generate visualizations.
 By default, the script uses alignment files `.bam` generated from preprocessing as input for read counting via the `countReads()` function in [DOTSeq](https://github.com/compgenom/DOTSeq/tree/main).
@@ -61,7 +62,7 @@ Rscript bulk/bulk_analysis.R \
   -o results/bulk
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `d.rds` file from [Zenodo](10.5281/zenodo.19266548), place it in:
+Alternatively, to start from precomputed ORF read counts, download the `bulk.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place it in:
 
 ```bash
 data/bulk/quantification
@@ -73,13 +74,13 @@ and run:
 Rscript bulk/bulk_analysis.R \
   -ss 2
   -gr ref/gr_orfs.rds \
-  -mat data/bulk/quantification \
+  -mat data/bulk/quantification/bulk.rds \
   -o results/bulk
 ```
    
 ### 5. Analysing the single-cell datasets
 
-To reproduce the manuscript figures, use precomputed alignment files `.bam` available on [Zenodo](10.5281/zenodo.19266548) and place them in:
+To reproduce the manuscript figures, use precomputed alignment files `.bam` available on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in:
 
 ```bash
 data/sc/alignment
@@ -99,7 +100,7 @@ Rscript sc/sc_analysis.R \
   -o results/sc
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `.rds` file from [Zenodo](10.5281/zenodo.19266548), place it in:
+Alternatively, to start from precomputed ORF read counts, download the `.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place it in:
 
 ```bash
 data/sc/quantification
