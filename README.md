@@ -140,4 +140,6 @@ chunshen [dot] lim [at] otago [dot] ac [dot] nz
 gabrielle [dot] chieng [at] postgrad [dot] otago [dot] ac [dot] nz
 
 ## CITATION
-compgenom. DOTSeq: Genome-wide detection of differential ORF usage. 2026. GitHub, https://github.com/compgenom/DOTSeq.
+Chun Shen Lim, Gabrielle S. W. Chieng. (2026). 
+DOTSeq enables genome-wide detection of differential ORF usage. 
+BioRxiv. DOI: https://doi.org/10.1101/2025.09.24.678201
