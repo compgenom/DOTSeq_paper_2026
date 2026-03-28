@@ -41,11 +41,12 @@ bash sc/sra_downloads_sc.sh
    
 ### 4. Analysing the bulk datasets
    
-Before the analysis, raw reads need to be quality controlled, trimmed, and aligned:
+Before the analysis, raw reads need to be quality controlled, trimmed, and aligned to produce an alignment file.
 
 ```bash
 bash bulk/preprocessing_bulk.sh
 ```
+These `.bam` alignment files are also available on [Zenodo](10.5281/zenodo.19266548), if you wish to skip the preprocessing step.
 
 Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate to gene-level counts, and generate visualizations.
 By default, the script uses alignment files `.bam` generated from preprocessing as input for read counting via the `countReads()` function in `DOTSeq`.
