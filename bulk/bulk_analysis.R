@@ -5,10 +5,8 @@
 # =============================================================================
 # Sources:
 # - Ly 2024 cell cycle dataset: [NCBI SRA](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA957808)
-# - Gene annotation and transcript FASTA: [MANE](https://ftp.ncbi.nlm.nih.gov/refseq/MANE/MANE_human/release_1.4)
 #
 # Notes:
-# - All FASTQ files from Ly 2024 cell cycle dataset are assumed to be downloaded via SRA Toolkit
 # - Paths to input files may need to be adjusted for your system
 # =============================================================================
 

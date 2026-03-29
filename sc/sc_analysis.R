@@ -5,10 +5,8 @@
 # =============================================================================
 # Sources:
 # - VanInsberghe 2021 single-cell Ribo-seq dataset: [NCBI SRA](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA680481)
-# - Gene annotation and transcript FASTA: [MANE](https://ftp.ncbi.nlm.nih.gov/refseq/MANE/MANE_human/release_1.4)
 #
 # Notes:
-# - All FASTQ files from Vanlnsberghe 2021 single-cell Ribo-seq dataset are assumed to be downloaded via SRA Toolkit
 # - Paths to input files may need to be adjusted for your system
 # =============================================================================
 
