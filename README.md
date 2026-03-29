@@ -33,29 +33,43 @@ apptainer shell app/dotseq.sif
 ```
 
 ### 3. Download reference genome, annotation files and raw read files
+This step retrieves all reference files required for both bulk and single-cell analyses. 
+The following scripts will download the required reference sequence and annotation files into the appropriate directories:
 
 ```bash
 bash ref/ref.sh
-bash bulk/sra_downloads_bulk.sh
-bash sc/sra_downloads_sc.sh
 ```
-   
-### 4. Analysing the bulk datasets
-   
+
+### 4.Bulk datasets
+
+#### Downloading raw reads
+
+For the **Bulk datasets**, only samples corresponding to **cycloheximide (CHX)-treated cells** are downloaded, as these are the conditions analysed in the manuscript. This represents a subset of the full dataset from the original study.
+
+```bash
+bash sra_downloads.sh \
+  --bulk_rna data/bulk/rna \
+  --bulk_ribo data/bulk/ribo \
+  --threads 16 \
+```
+#### Preprocessing raw reads
+
 Before analysis, raw reads must be quality controlled, trimmed, and aligned to generate alignment files. Precomputed alignment files (`Aligned.sortedByCoord.out.bam`) are available on [Zenodo](https://doi.org/10.5281/zenodo.19266548) if you wish to skip this preprocessing step.
 
 ```bash
 bash bulk/preprocessing_bulk.sh
 ```
 
+#### Analysing bulk datasets
+
 Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate gene-level counts, and generate visualisations.
 By default, the pipeline uses the `Aligned.sortedByCoord.out.bam` files to extract exonic reads using `getExonicReads()` from [DOTSeq](https://github.com/compgenom/DOTSeq/tree/main), producing `_Aligned.sortedByCoord.out.exonic.sorted.bam`. These filtered BAM files are then used for read counting via [DOTSeq](https://github.com/compgenom/DOTSeq/tree/main)'s `countReads()` function. Precomputed exonic BAM files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
 
 ```bash
 Rscript bulk/bulk_analysis.R \
-  -ss 1
-  -a ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz
-  -s ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz
+  -ss 1 \
+  -a ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz \
+  -s ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz \
   -gr ref/gr_orfs.rds \
   -bam data/bulk/alignment \
   -mat data/bulk/quantification \
@@ -66,15 +80,23 @@ Alternatively, to start from precomputed ORF read counts, download the `bulk.rds
 
 ```bash
 Rscript bulk/bulk_analysis.R \
-  -ss 2
+  -ss 2 \
   -gr ref/gr_orfs.rds \
   -mat data/bulk/quantification \
   -o results/bulk
 ```
-   
-### 5. Analysing the single-cell datasets
 
-The preprocessing step to generate the alignment files `.bam` was done using a modified Nextflow pipeline from [scRiboSeq_manuscript](https://github.com/mvanins/scRiboSeq_manuscript). This modified pipeline will be provided in a separate repositorry.
+##### Notes on directory settings
+All files will be organised into the predefined directory structure (e.g., `ref/`, and `data/bulk/`) to ensure compatibility with downstream preprocessing and analysis steps. 
+If you run the preprocessing steps, the required directory structure (e.g., `data/bulk/`) will be created automatically.
+If you prefer to use a different directory structure, or if you choose to skip the preprocessing step and download precomputed files from [Zenodo](https://doi.org/10.5281/zenodo.19266548), you will need to create the appropriate directories manually before placing the files. Please also modify the paths when running the scripts accordingly.
+
+   
+### 5. Single-cell datasets
+
+For the **Single-cell datasets**, only data derived from **hTERT-RPE1 cells** are used for downstream analysis, consistent with the conditions presented in the manuscript.
+
+The preprocessing step to generate the alignment files for single-cell datasets was done using a modified Nextflow pipeline from [scRiboSeq_manuscript](https://github.com/mvanins/scRiboSeq_manuscript). This modified pipeline will be provided in a separate repository.
 
 To reproduce the manuscript figures, download the precomputed alignment files `_Aligned.sortedByCoord.out_CB.bam` from on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
 
@@ -85,18 +107,18 @@ Rscript sc/sc_analysis.R \
   -ss 1 \
   -a ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz \
   -s ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz \
-  -gr ref/gr_orfs.rds
+  -gr ref/gr_orfs.rds \
   -bam data/sc/alignment \
   -mat data/sc/quantification \
   -umi 50 \
   -o results/sc
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place them in `data/sc/quantification` and run:
+Alternatively, to start from precomputed ORF read counts, download the `_Aligned.sortedByCoord.out_CB_mat.rds` and `gr_orfs.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place them in `data/sc/quantification` and `ref/` respectively, and run:
 
 ```bash
 Rscript sc/sc_analysis.R \
-  -ss 2
+  -ss 2 \
   -gr ref/gr_orfs.rds \
   -mat data/sc/quantification \
   -umi 50 \

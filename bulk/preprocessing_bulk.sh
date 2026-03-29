@@ -10,34 +10,70 @@ set -euo pipefail
 # - Reference genome: hg38 ([UCSC Genome Browser](https://genome.ucsc.edu/))
 #
 # Tools:
-# - SRA Toolkit
 # - STAR
 # - cutadapt
 #
-# Notes:
-# - All tools are assumed to be installed and available in your PATH
-# - All FASTQ files from Ly 2024 HeLa cell cycle dataset are assumed to be downloaded via SRA Toolkit
-# - Paths to input files may need to be adjusted for your system
+# Usage:
+# bash preprocessing_bulk.sh \
+#   --rna data/bulk/rna/chx \
+#   --ribo data/bulk/ribo/chx \
+#   --out data/bulk \
+#   --ref ref/hg38_star_index \
+#   --threads 32
 # =============================================================================
 
-mkdir -p data/bulk/alignment
+# ---------------------------
+# Default parameters
+# ---------------------------
+RNA_DIR="data/bulk/rna/chx"
+RIBO_DIR="data/bulk/ribo/chx"
+OUT_DIR="data/bulk"
+REF_DIR="ref/hg38_star_index"
+THREADS=32
 
+# ---------------------------
+# Parse arguments
+# ---------------------------
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --rna) RNA_DIR="$2"; shift 2 ;;
+    --ribo) RIBO_DIR="$2"; shift 2 ;;
+    --out) OUT_DIR="$2"; shift 2 ;;
+    --ref) REF_DIR="$2"; shift 2 ;;
+    --threads) THREADS="$2"; shift 2 ;;
+    *) echo "Unknown option: $1"; exit 1 ;;
+  esac
+done
+
+# ---------------------------
+# Derived directories
+# ---------------------------
+ALIGN_DIR="${OUT_DIR}/alignment"
+TRIM_RNA_DIR="${OUT_DIR}/rna"
+TRIM_RIBO_DIR="${OUT_DIR}/ribo"
+
+mkdir -p "$ALIGN_DIR" "$TRIM_RNA_DIR" "$TRIM_RIBO_DIR"
+
+# ---------------------------
 # RNA processing
-for i in data/bulk/rna/chx/*.fastq.gz; do
+# ---------------------------
+echo "Processing RNA-seq..."
+
+for i in "${RNA_DIR}"/*.fastq.gz; do
   [ -e "$i" ] || continue
 
   base=$(basename "$i" .fastq.gz)
 
-  cutadapt -j 16 -m 15 -u 8 -e 0.1 --match-read-wildcards \
+  cutadapt -j "$THREADS" -m 15 -u 8 -e 0.1 --match-read-wildcards \
     -a TCGTATGCCGTCTTCTGCTTG -O 1 \
-    -o data/bulk/rna/${base}.trimmed.fasta.gz "$i"
+    -o "${TRIM_RNA_DIR}/${base}.trimmed.fasta.gz" "$i"
 
   STAR --runMode alignReads \
-    --runThreadN 32 \
-    --genomeDir ref/hg38_star_index \
-    --readFilesIn data/bulk/rna/${base}.trimmed.fasta.gz \
+    --runThreadN "$THREADS" \
+    --genomeDir "$REF_DIR" \
+    --readFilesIn "${TRIM_RNA_DIR}/${base}.trimmed.fasta.gz" \
     --readFilesCommand zcat \
-    --outFileNamePrefix data/bulk/alignment/${base}_ \
+    --outFileNamePrefix "${ALIGN_DIR}/${base}_" \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterType BySJout \
@@ -48,22 +84,28 @@ for i in data/bulk/rna/chx/*.fastq.gz; do
     --outSAMattributes All
 done
 
+echo "RNA-seq processing completed."
+
+# ---------------------------
 # Ribo processing
-for i in data/bulk/ribo/chx/*.fastq.gz; do
-  [ -e "$i" ] || continue # if file doesn't exist it will skip.
+# ---------------------------
+echo "Processing Ribo-seq..."
+
+for i in "${RIBO_DIR}"/*.fastq.gz; do
+  [ -e "$i" ] || continue
 
   base=$(basename "$i" .fastq.gz)
 
-  cutadapt -j 16 -m 15 -u 8 -e 0.1 --match-read-wildcards \
+  cutadapt -j "$THREADS" -m 15 -u 8 -e 0.1 --match-read-wildcards \
     -a TCGTATGCCGTCTTCTGCTTG -O 1 \
-    -o data/bulk/ribo/${base}.trimmed.fasta.gz "$i"
+    -o "${TRIM_RIBO_DIR}/${base}.trimmed.fasta.gz" "$i"
 
   STAR --runMode alignReads \
-    --runThreadN 32 \
-    --genomeDir ref/hg38_star_index \
-    --readFilesIn data/bulk/ribo/${base}.trimmed.fasta.gz \
+    --runThreadN "$THREADS" \
+    --genomeDir "$REF_DIR" \
+    --readFilesIn "${TRIM_RIBO_DIR}/${base}.trimmed.fasta.gz" \
     --readFilesCommand zcat \
-    --outFileNamePrefix data/bulk/alignment/${base}_ \
+    --outFileNamePrefix "${ALIGN_DIR}/${base}_" \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterType BySJout \
@@ -74,4 +116,4 @@ for i in data/bulk/ribo/chx/*.fastq.gz; do
     --outSAMattributes All
 done
 
-
+echo "Ribo-seq processing completed."
