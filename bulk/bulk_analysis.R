@@ -38,12 +38,6 @@ parser <- ArgumentParser(description = "DOTSeq bulk analysis")
 parser$add_argument("-ss", "--start", type = "integer", default = 1,
                     help = "Step to start the pipeline from")
 
-parser$add_argument("-a", "--annotation", type = "character",
-                    default = "ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz")
-
-parser$add_argument("-s", "--sequences", type = "character",
-                    default = "ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz")
-
 parser$add_argument("-bam", "--bam-dir", type = "character",
                     default = "data/bulk/alignment")
 
@@ -64,27 +58,11 @@ dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(fig_dir, recursive = TRUE, showWarnings = FALSE)
 
 if (opt$start == 1) {
-  if (is.null(opt$annotation) || is.null(opt$sequences) || is.null(opt$bam_dir) || is.null(opt$mat_dir) || 
-      is.null(opt$gr_dir) || is.null(opt$out_dir)) {
-    stop("To start from alignment files, you must provide --outdir, --annotation, --sequences, --bam-dir, --mat-dir and --gr-dir")
+  if (is.null(opt$bam_dir) || is.null(opt$mat_dir) || is.null(opt$gr_dir) || is.null(opt$out_dir)) {
+    stop("To start from alignment files, you must provide --outdir, --bam-dir, --mat-dir and --gr-dir")
   }
-  
-  # Step 1: Generate the ORF-level annotation using DOTSeq's getORFs() function
-  gr <- getORFs(
-    sequences = opt$sequences,
-    annotation = opt$annotation,
-    organism = "Homo sapiens",
-    start_codons = "ATG",
-    stop_codons = "TAA|TAG|TGA",
-    min_len = 0,
-    longest_orf = TRUE,
-    verbose = TRUE
-  )
     
-  saveRDS(gr, opt$gr_dir)
-  message("ORF annotation done. ORF GRanges saved to", opt$gr_dir)
-
-  # Step 2: Clean up BAM files; Prepare the counts and condition tables
+  # Step 1: Clean up BAM files; Prepare the counts and condition tables
   bam_list <- list.files(
     path = opt$bam_dir,
     pattern = "Aligned.sortedByCoord.out.bam$",

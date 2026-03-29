@@ -44,12 +44,6 @@ parser <- ArgumentParser(description = "DOTSeq single cell analysis")
 parser$add_argument("-ss", "--start", type = "integer", default = 1,
                     help = "Step to start the pipeline from")
 
-parser$add_argument("-a", "--annotation", type = "character",
-                    default = "ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz")
-
-parser$add_argument("-s", "--sequences", type = "character",
-                    default = "ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz")
-
 parser$add_argument("-gr", "--gr-dir", type = "character",
                     default = "ref/gr_orfs.rds")
 
@@ -76,26 +70,12 @@ dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(fig_dir, recursive = TRUE, showWarnings = FALSE)
 
 if (opt$start == 1) {
-  if (is.null(opt$annotation) || is.null(opt$sequences) || is.null(opt$bam_dir) || is.null(opt$mat_dir) || 
-      is.null(opt$gr_dir) || is.null(opt$out_dir)) {
-    stop("To start from read counting step, you must provide --outdir, --annotation, --sequences, and --gr-output")
+  if (is.null(opt$bam_dir) || is.null(opt$mat_dir) || is.null(opt$gr_dir) || is.null(opt$out_dir)) {
+    stop("To start from read counting step, you must provide --out-dir, --bam-dir, --gr-dir, and --mat-dir")
   }
   
-  # Step 1: Generate the ORF-level annotation using DOTSeq's getORFs() function
-  gr <- getORFs(
-    sequences = opt$sequences,
-    annotation = opt$annotation,
-    organism = "Homo sapiens",
-    start_codons = "ATG",
-    stop_codons = "TAA|TAG|TGA",
-    min_len = 0,
-    longest_orf = TRUE,
-    verbose = TRUE
-  )
-  saveRDS(gr, opt$gr_dir)
-  message("ORF annotation done. ORF GRanges saved to", opt$gr_dir)
-  
-  # Step 2: Count single-cell reads/UMIs from BAM over genomic features using DOTSeq's countReadsSingleCell() function
+  # Step 1: Count single-cell reads/UMIs from BAM over genomic features using DOTSeq's countReadsSingleCell() function
+  gr <- readRDS(opt$gr_dir)  
   bam_list <- list.files(opt$bam_dir, pattern = "_Aligned.sortedByCoord.out_CB.bam$", recursive = TRUE, full.names = TRUE)
   dir.create(opt$mat_dir, showWarnings = FALSE, recursive = TRUE)
   
@@ -108,8 +88,8 @@ if (opt$start == 1) {
 }
 
 if (opt$start <=2) {
-  if (is.null(opt$mat_dir) || is.null(opt$out_dir)) {
-    stop("To start with precomputed per-ORF matrices, you must provide --rds-dir and --out-dir")
+  if (is.null(opt$mat_dir) || is.null(opt$out_dir) || is.null(opt$gr_dir)) {
+    stop("To start with precomputed per-ORF matrices, you must provide --gr-dir --rds-dir and --out-dir")
   }
   
   # Step 3: Match per-ORF count matrices with sample metadata

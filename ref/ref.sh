@@ -3,16 +3,12 @@
 # =============================================================================
 # Script: Download reference files from databases and generate STAR index
 # =============================================================================
-# Sources:
-# - Gene annotation and transcript FASTA: [GENCODE v47](https://www.gencodegenes.org/human)
-# - Reference genome: hg38 ([UCSC Genome Browser](https://genome.ucsc.edu/))
 #
 # Tools:
 # - SRA Toolkit
 # - STAR
 #
 # Notes:
-# - All tools are assumed to be installed and available in your PATH
 # - Paths to input files may need to be adjusted for your system
 # =============================================================================
 

@@ -7,7 +7,7 @@ All precomputed datasets are available on [Zenodo](https://doi.org/10.5281/zenod
 ## CONTENTS
 
 - **Apptainer**: [app/](app/) — Build the container from an Apptainer definition file  
-- **Reference sequence and annotation**: [ref/](ref/) — Contains script to download reference annotations and transcript files, as well as metadata for both bulk and single-cell analyses  
+- **Reference sequence and annotation**: [ref/](ref/) — Contains scripts to download reference annotations and transcript files and generate ORF-level annotation, as well as metadata for both bulk and single-cell analyses
 - **Bulk Datasets**: [bulk/](bulk/) — Scripts to analyse bulk datasets from [Ly 2024](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA957808)
 - **Single-cell Datasets**: [sc/](sc/) — Quantification, aggregation, and visualization of single-cell Ribo-seq data from [VanInsberghe 2021](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA680481) 
 - **Benchmarking**: [benchmarking/](benchmarking/) — Scripts for generating simulated datasets and benchmarking DOTSeq across conditions  
@@ -32,7 +32,7 @@ apptainer build app/dotseq.sif app/dotseq.def
 apptainer shell app/dotseq.sif
 ```
 
-### 3. Download reference genome, annotation files and raw read files
+### 3. Download reference sequence and annotation files
 This step retrieves all reference files required for both bulk and single-cell analyses. 
 The following scripts will download the required reference sequence and annotation files into the appropriate directories:
 
@@ -40,7 +40,16 @@ The following scripts will download the required reference sequence and annotati
 bash ref/ref.sh
 ```
 
-### 4.Bulk datasets
+### 4. Generate the ORF-level annotation using DOTSeq's `getORFs()` function
+
+```bash
+Rscript ref/orf_annotation.R \
+  -a ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz \
+  -s ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz \
+  -o ref
+```
+
+### 5.Bulk datasets
 
 #### Downloading raw reads
 
@@ -68,8 +77,6 @@ By default, the pipeline uses the `Aligned.sortedByCoord.out.bam` files to extra
 ```bash
 Rscript bulk/bulk_analysis.R \
   -ss 1 \
-  -a ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz \
-  -s ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz \
   -gr ref/gr_orfs.rds \
   -bam data/bulk/alignment \
   -mat data/bulk/quantification \
@@ -92,7 +99,7 @@ If you run the preprocessing steps, the required directory structure (e.g., `dat
 If you prefer to use a different directory structure, or if you choose to skip the preprocessing step and download precomputed files from [Zenodo](https://doi.org/10.5281/zenodo.19266548), you will need to create the appropriate directories manually before placing the files. Please also modify the paths when running the scripts accordingly.
 
    
-### 5. Single-cell datasets
+### 6. Single-cell datasets
 
 For the **Single-cell datasets**, only data derived from **hTERT-RPE1 cells** are used for downstream analysis, consistent with the conditions presented in the manuscript.
 
@@ -105,8 +112,6 @@ By default, the script starts from the read counting step. The recommended UMI t
 ```bash
 Rscript sc/sc_analysis.R \
   -ss 1 \
-  -a ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz \
-  -s ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz \
   -gr ref/gr_orfs.rds \
   -bam data/sc/alignment \
   -mat data/sc/quantification \
@@ -125,7 +130,7 @@ Rscript sc/sc_analysis.R \
   -o results/sc
 ```
    
-### 6. Benchmarking
+### 7. Benchmarking
 
 To generate benchmarking figures, simulated datasets must first be created:
 
