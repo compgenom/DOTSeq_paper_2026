@@ -95,6 +95,7 @@ if (opt$start <=2) {
   `%||%` <- function(a, b) if (!is.null(a)) a else b
   printf <- function(...) cat(sprintf(...), "\n")
   
+  # Subset from initial successful completion of the transfer queue
   selected_runs <- c(
     "SRR13125084", "SRR13125088", "SRR13125092", "SRR13125094",
     "SRR13125096", "SRR13125097", "SRR13125102", "SRR13125103",
