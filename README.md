@@ -49,7 +49,7 @@ Rscript ref/orf_annotation.R \
   -o ref
 ```
 
-### 5.Bulk datasets
+### 5.Bulk Ribo-seq analysis
 
 #### Downloading raw reads
 
@@ -69,10 +69,10 @@ Before analysis, raw reads must be quality controlled, trimmed, and aligned to g
 bash bulk/preprocessing_bulk.sh
 ```
 
-#### Analysing bulk datasets
+#### Analysing bulk Ribo-seq
 
 Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate gene-level counts, and generate visualisations.
-By default, the pipeline uses the `Aligned.sortedByCoord.out.bam` files to extract exonic reads using `getExonicReads()` from [DOTSeq](https://github.com/compgenom/DOTSeq/tree/main), producing `_Aligned.sortedByCoord.out.exonic.sorted.bam`. These filtered BAM files are then used for read counting via [DOTSeq](https://github.com/compgenom/DOTSeq/tree/main)'s `countReads()` function. Precomputed exonic BAM files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
+By default, the pipeline uses the `Aligned.sortedByCoord.out.bam` files to extract exonic reads using `getExonicReads()` from [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq), producing `_Aligned.sortedByCoord.out.exonic.sorted.bam`. These filtered BAM files are then used for read counting via [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq)'s `countReads()` function. Precomputed exonic BAM files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
 
 ```bash
 Rscript bulk/bulk_analysis.R \
@@ -99,7 +99,7 @@ If you run the preprocessing steps, the required directory structure (e.g., `dat
 If you prefer to use a different directory structure, or if you choose to skip the preprocessing step and download precomputed files from [Zenodo](https://doi.org/10.5281/zenodo.19266548), you will need to create the appropriate directories manually before placing the files. Please also modify the paths when running the scripts accordingly.
 
    
-### 6. Single-cell datasets
+### 6. Single-cell Ribo-seq analysis
 
 For the **Single-cell datasets**, only data derived from **hTERT-RPE1 cells** are used for downstream analysis, consistent with the conditions presented in the manuscript.
 

@@ -89,8 +89,9 @@ if (opt$start == 1) {
   cnt <- countReads(gr = gr, bam_files = bam_files)
   names(cnt) <- gsub(".*(SRR[0-9]+).*", "\\1", names(cnt))
     
-  # Step 3: Create a DOTSeqDataSets object and run the DOTSeq workflow 
+  # Step 2: Create a DOTSeqDataSets object and run the DOTSeq workflow 
   # Since the ORF-level annotation was prepared using the getORF() function from DOTSeq, we used DOTSeqDataSetsFromSummarizeOverlaps() instead of the DOTSeqDataSetsFromFeatureCounts() function
+    
   d <- DOTSeqDataSetsFromSummarizeOverlaps(
         count_table = cnt, 
         condition_table = cond, 
@@ -105,7 +106,7 @@ if (opt$start <=2) {
     stop("To start with precomputed per-ORF matrices, you must provide --gr-dir, --mat-dir and --out-dir")
   }
     
-    # Step 4: Extract and inspect results from DOTSeq using the getContrasts() function
+    # Step 3: Extract and inspect results from DOTSeq using the getContrasts() function
     d <- readRDS(file.path(opt$mat_dir, "bulk.rds"))
     
     results <- getContrasts(d, type = "interaction")
@@ -113,7 +114,7 @@ if (opt$start <=2) {
     te <- results$DTE[results$DTE$contrast == "Mitotic_Cycling - Interphase", ]
     results <- merge(ou, te, by = c("orf_id", "contrast"), all = TRUE)
     
-    # Step 5: Visualisation using the plotDOT() function
+    # Step 4: Visualisation using the plotDOT() function
     
     pdf(file.path(fig_dir, "venn.pdf"),  width = 3, height = 2.5)
     plotDOT(plot_type = "venn", results = results, force_new_device = FALSE)

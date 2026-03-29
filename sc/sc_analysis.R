@@ -92,7 +92,7 @@ if (opt$start <=2) {
     stop("To start with precomputed per-ORF matrices, you must provide --gr-dir --rds-dir and --out-dir")
   }
   
-  # Step 3: Match per-ORF count matrices with sample metadata
+  # Step 2: Match per-ORF count matrices with sample metadata
   
   `%||%` <- function(a, b) if (!is.null(a)) a else b
   printf <- function(...) cat(sprintf(...), "\n")
@@ -125,7 +125,7 @@ if (opt$start <=2) {
   # stopifnot(nrow(sra_sub) > 0, all(file.exists(sra_sub$matrix)))
   # printf("Included runs: %d", nrow(sra_sub))
   
-  # Step 4: Load and merge per-ORF matrices with unified feature space
+  # Step 3: Load and merge per-ORF matrices with unified feature space
   
   read_one <- function(path, run) {
     mat <- readRDS(path)
@@ -169,7 +169,7 @@ if (opt$start <=2) {
   printf("After removing all-zero ORFs: %d ORFs x %d cells", nrow(M), ncol(M))
   
   
-  # Step 5: Map ORFs to genes; split uORF/mORF; aggregate to gene level
+  # Step 4: Map ORFs to genes; split uORF/mORF; aggregate to gene level
   
   gr <- readRDS(opt$gr_dir); stopifnot(is(gr, "GRanges"))
   idx <- match(rownames(M), names(gr))
@@ -208,7 +208,7 @@ if (opt$start <=2) {
   stopifnot(inherits(M_morf, "dgCMatrix"), inherits(M_uorf, "dgCMatrix"), identical(dim(M_morf), dim(M_uorf)))
   printf("Gene-level matrices: %d genes x %d cells", nrow(M_morf), ncol(M_morf))
   
-  # Step 6: Create a SCE and Seurat v5 layered object
+  # Step 5: Create a SCE and Seurat v5 layered object
   
   cell_ids <- colnames(M_morf)
   gene_ids <- rownames(M_morf)
@@ -240,7 +240,7 @@ if (opt$start <=2) {
   uORF_tot_counts <- get_counts_totals(sobj, "uORF")
   sobj$uORF_mORF_ratio <- uORF_tot_counts / (mORF_tot_counts + 1)
   
-  # Step 7: Create uORF- and mORF-only UMAP 
+  # Step 6: Create uORF- and mORF-only UMAP 
   
   ## mORF-only UMAP (default assay mORF)
   DefaultAssay(sobj) <- "mORF"
@@ -304,7 +304,7 @@ if (opt$start <=2) {
   
   print(p_umap_uorf_ratio); print(p_umap_uorf_trt)
   
-  # Step 8: Create a WNN joint manifold
+  # Step 7: Create a WNN joint manifold
   ##     - mORF: SCTransform + PCA  (SCT_mORF)
   ##     - uORF: LogNormalize + PCA (assay = "uORF")
   
@@ -360,7 +360,7 @@ if (opt$start <=2) {
     message(sprintf("Graph Moran's I on WNN (subset): %.4f", morans_I))
   }
   
-  # Step 9: GLMM on uORF fraction (depth-neutral), SRR random effect
+  # Step 8: GLMM on uORF fraction (depth-neutral), SRR random effect
   
   DefaultAssay(sobj) <- "mORF"  # not required for GLMM inputs below
   
@@ -379,7 +379,7 @@ if (opt$start <=2) {
   )
   print(summary(fit_bb))
   
-  # Step 10: EMMs (probability scale) + pairwise differences
+  # Step 9: EMMs (probability scale) + pairwise differences
   
   emm_trt <- emmeans(fit_bb, ~ Treatment, type = "response")
   emm_df  <- as.data.frame(emm_trt)
@@ -420,7 +420,7 @@ if (opt$start <=2) {
   
   print(p_pw_or)
   
-  # Step 11: DHARMa diagnostics
+  # Step 10: DHARMa diagnostics
   
   set.seed(1)
   res <- simulateResiduals(fit_bb, n = 1000)
@@ -452,7 +452,7 @@ if (opt$start <=2) {
     labs(title = "Pearson residuals by Treatment", y = "Pearson residual", x = NULL)
   print(p_res_pear)
   
-  # Step 12: Leave-one-SRR-out robustness
+  # Step 11: Leave-one-SRR-out robustness
   
   runs <- levels(df$SRR)
   emm_full <- as.data.frame(emmeans(fit_bb, ~ Treatment, type = "response")) %>% mutate(kind = "full")
@@ -474,7 +474,7 @@ if (opt$start <=2) {
     theme_classic() + theme(axis.text.x = element_text(angle = 25, hjust = 1))
   print(p_loo)
   
-  # Step 13: Graph Moran’s I for uORF fraction on the current graph
+  # Step 12: Graph Moran’s I for uORF fraction on the current graph
   
   Glist <- tryCatch(Seurat::Graphs(sobj), error = function(e) list())
   gname <- if ("weighted.nn" %in% names(Glist)) "weighted.nn" else names(Glist)[1] %||% NA_character_
@@ -488,7 +488,7 @@ if (opt$start <=2) {
     printf("No Seurat graph found for Moran's I computation.")
   }
   
-  # Step 14: Rebuild WNN on s_wnn and compare clusters vs Treatment with NMI/AMI/ARI
+  # Step 13: Rebuild WNN on s_wnn and compare clusters vs Treatment with NMI/AMI/ARI
   
   s_wnn <- FindMultiModalNeighbors(
     s_wnn,
@@ -538,7 +538,7 @@ if (opt$start <=2) {
   p_two <- 2 * min(p_emp, 1 - p_emp)                  
   p_emp
   
-  # Step 15: Save figures
+  # Step 14: Save figures
   
   ggsave(file.path(fig_dir, "umap_morf_ratio.pdf"), p_umap_ratio, width = 4.75, height = 4)
   ggsave(file.path(fig_dir, "umap_morf_trt.pdf"),   p_umap_trt,   width = 6.45, height = 4)
