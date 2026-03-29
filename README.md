@@ -7,7 +7,7 @@ All precomputed datasets are available on [Zenodo](https://doi.org/10.5281/zenod
 ## CONTENTS
 
 - **Apptainer**: [app/](app/) — Build the container from an Apptainer definition file  
-- **Reference sequence and annotation**: [ref/](ref/) — Contains scripts to download reference annotations and transcript files, as well as metadata for both bulk and single-cell analyses  
+- **Reference sequence and annotation**: [ref/](ref/) — Contains script to download reference annotations and transcript files, as well as metadata for both bulk and single-cell analyses  
 - **Bulk Datasets**: [bulk/](bulk/) — Scripts to analyse bulk datasets from [Ly 2024](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA957808)
 - **Single-cell Datasets**: [sc/](sc/) — Quantification, aggregation, and visualization of single-cell Ribo-seq data from [VanInsberghe 2021](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA680481) 
 - **Benchmarking**: [benchmarking/](benchmarking/) — Scripts for generating simulated datasets and benchmarking DOTSeq across conditions  
@@ -47,7 +47,7 @@ bash ref/ref.sh
 For the **Bulk datasets**, only samples corresponding to **cycloheximide (CHX)-treated cells** are downloaded, as these are the conditions analysed in the manuscript. This represents a subset of the full dataset from the original study.
 
 ```bash
-bash sra_downloads.sh \
+bash bulk/sra_download.sh \
   --bulk_rna data/bulk/rna \
   --bulk_ribo data/bulk/ribo \
   --threads 16 \
