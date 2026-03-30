@@ -7,7 +7,7 @@ All precomputed datasets are available on [Zenodo](https://doi.org/10.5281/zenod
 ## CONTENTS
 
 - **Apptainer**: [app/](app/) — Build the container from an Apptainer definition file  
-- **Reference sequence and annotation**: [ref/](ref/) — Contains scripts to download reference annotations and transcript files and generate ORF-level annotation, as well as metadata for both bulk and single-cell analyses
+- **Reference files**: [ref/](ref/) — Contains scripts to download reference annotations and transcript files, as well as metadata for both bulk and single-cell analyses
 - **Bulk Datasets**: [bulk/](bulk/) — Scripts to analyse bulk datasets from [Ly 2024](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA957808)
 - **Single-cell Datasets**: [sc/](sc/) — Quantification, aggregation, and visualization of single-cell Ribo-seq data from [VanInsberghe 2021](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA680481) 
 - **Benchmarking**: [benchmarking/](benchmarking/) — Scripts for generating simulated datasets and benchmarking DOTSeq across conditions  
@@ -49,7 +49,7 @@ Rscript ref/orf_annotation.R \
   -o ref
 ```
 
-### 5.Bulk Ribo-seq analysis
+### 5. Bulk Ribo-seq analysis
 
 #### Downloading raw reads
 
@@ -71,8 +71,9 @@ bash bulk/preprocessing_bulk.sh
 
 #### Analysing bulk Ribo-seq
 
-Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate gene-level counts, and generate visualisations.
-By default, the pipeline uses the `Aligned.sortedByCoord.out.bam` files to extract exonic reads using `getExonicReads()` from [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq), producing `_Aligned.sortedByCoord.out.exonic.sorted.bam`. These filtered BAM files are then used for read counting via [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq)'s `countReads()` function. Precomputed exonic BAM files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
+Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate gene-level counts, and generate visualisations. 
+
+By default, the pipeline uses the `*_Aligned.sortedByCoord.out.bam` files to extract exonic reads using `getExonicReads()` from [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq), producing `*_Aligned.sortedByCoord.out.exonic.sorted.bam`. These filtered BAM files are then used for read counting via [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq)'s `countReads()` function. Precomputed exonic BAM files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
 
 ```bash
 Rscript bulk/bulk_analysis.R \
@@ -104,7 +105,7 @@ For the **Single-cell datasets**, only data derived from **hTERT-RPE1 cells** ar
 
 The preprocessing step to generate the alignment files for single-cell datasets was done using a modified Nextflow pipeline from [scRiboSeq_manuscript](https://github.com/mvanins/scRiboSeq_manuscript). This modified pipeline will be provided in a separate repository.
 
-To reproduce the manuscript figures, download the precomputed alignment files `_Aligned.sortedByCoord.out_CB.bam` from on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
+To reproduce the manuscript figures, download the precomputed alignment files `*_Aligned.sortedByCoord.out_CB.bam` from [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
 
 By default, the script starts from the read counting step. The recommended UMI threshold is 50, but this can be adjusted.
 
@@ -118,7 +119,7 @@ Rscript sc/sc_analysis.R \
   -o results/sc
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `_Aligned.sortedByCoord.out_CB_mat.rds` and `gr_orfs.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place them in `data/sc/quantification` and `ref/` respectively, and run:
+Alternatively, to start from precomputed ORF read counts, download the `*_Aligned.sortedByCoord.out_CB_mat.rds` and `gr_orfs.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place them in `data/sc/quantification` and `ref/` respectively, and run:
 
 ```bash
 Rscript sc/sc_analysis.R \

@@ -40,7 +40,7 @@ From: bioconductor/bioconductor_docker:devel-R-4.6.0
     install.packages(c(
       "Seurat","SeuratObject","sp","aricode","FNN","glmmTMB","emmeans", "viridis",
       "splines","igraph","scales","ggExtra","dplyr","tidyr","Matrix",
-      "S4Vectors","GenomicRanges","SingleCellExperiment","ggplot2",
+      "S4Vectors","GenomicRanges","SingleCellExperiment","ggplot2", curl,
       "ggsignif","magick","rmarkdown","knitr","optparse","devtools","testthat",
       "leidenbase", "future", "argparse" ), repos="https://cloud.r-project.org", lib=dotseq_lib)
     

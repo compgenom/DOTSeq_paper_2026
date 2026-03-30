@@ -33,6 +33,9 @@ suppressPackageStartupMessages({
     library(argparse)
 })
 
+install.packages("curl")
+library(curl)
+
 parser <- ArgumentParser(description = "DOTSeq bulk analysis")
 
 parser$add_argument("-ss", "--start", type = "integer", default = 1,
@@ -144,6 +147,25 @@ if (opt$start <=2) {
     
     pdf(file.path(fig_dir, "volcano.pdf"), width = 5, height = 5)
     mapping <- NULL
+    ensembl_ok <- FALSE
+
+    has_net <- isTRUE(curl::has_internet())
+    
+    if (has_net) {
+      ensembl_ok <- tryCatch({
+        res <- curl::curl_fetch_memory(
+          "https://rest.ensembl.org/info/ping",
+          handle = curl::new_handle(timeout = 3)
+        )
+        isTRUE(res$status_code >= 200 && res$status_code < 500)
+      }, error = function(e) FALSE)
+    }
+    
+    if (!ensembl_ok) {
+      message("Ensembl not reachable; vignette will fall back to org.Hs.eg.db for gene symbols.")
+      suppressPackageStartupMessages(library(org.Hs.eg.db))
+    }
+                         
     if (isTRUE(ensembl_ok)) {
         mapping <- try(
             plotDOT(
@@ -179,7 +201,7 @@ if (opt$start <=2) {
         results = results,
         data = getDOU(d),
         id_mapping = mapping,
-        plot_params = list(color_by = "orf_type", top_hits = 3, legend_position = "topright"),
+        plot_params = list(color_by = "orf_type", top_hits = 3, legend_position = "top"),
         force_new_device = FALSE
     )
     dev.off()
@@ -194,8 +216,6 @@ if (opt$start <=2) {
         force_new_device = FALSE
     )
     dev.off()
-
-    
     
     pdf(file.path(fig_dir, "usage.pdf"), width = 3.5, height = 8)
     orderby <- c("Mitotic_Cycling", "Mitotic_Arrest", "Interphase")
