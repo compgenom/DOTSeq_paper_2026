@@ -143,13 +143,34 @@ if (opt$start <=2) {
     dev.off()
     
     pdf(file.path(fig_dir, "volcano.pdf"), width = 5, height = 5)
-    plotDOT(
-        plot_type = "volcano", 
-        results = results,
-        id_mapping = TRUE,
-        plot_params = list(color_by = "significance", top_hits = 3, legend_position = "topright"),
-        force_new_device = FALSE
-    )
+    mapping <- NULL
+    if (isTRUE(ensembl_ok)) {
+        mapping <- try(
+            plotDOT(
+                plot_type   = "volcano",
+                results     = results,
+                id_mapping  = TRUE, 
+                plot_params = list(color_by = "significance", top_hits = 3, legend_position = "topright"),
+                force_new_device = FALSE
+            ),
+        silent = TRUE
+        )
+    }
+
+    if (is.null(mapping)) {
+        suppressPackageStartupMessages(library(org.Hs.eg.db))
+    
+        rd <- rowData(getDOU(d))
+        rd$gene_id <- sub("\\.\\d+$", "", rd$gene_id)
+    
+        mapping <- AnnotationDbi::select(
+            org.Hs.eg.db,
+            keys    = unique(rd$gene_id),
+            keytype = "ENSEMBL",
+            columns = "SYMBOL"
+        )
+        names(mapping) <- c("ensembl_gene_id", "hgnc_symbol")
+    }
     dev.off()
     
     pdf(file.path(fig_dir, "volcano_orf_type.pdf"), width = 5, height = 5)
@@ -157,8 +178,8 @@ if (opt$start <=2) {
         plot_type = "volcano", 
         results = results,
         data = getDOU(d),
-        id_mapping = TRUE,
-        plot_params = list(color_by = "orf_type", top_hits = 3, legend_position = "top"),
+        id_mapping = mapping,
+        plot_params = list(color_by = "orf_type", top_hits = 3, legend_position = "topright"),
         force_new_device = FALSE
     )
     dev.off()
@@ -168,17 +189,13 @@ if (opt$start <=2) {
         plot_type = "heatmap", 
         results = results, 
         data = getDOU(d), 
-        id_mapping = TRUE, 
+        id_mapping = mapping, 
         plot_params = list(rank_by = "significance", top_hits = 50),
         force_new_device = FALSE
     )
     dev.off()
 
-    mapping <- plotDOT(plot_type = "volcano", 
-                       results = results,
-                       id_mapping = TRUE,
-                       plot_params = list(color_by = "significance", top_hits = 3, legend_position = "topright"),
-                       force_new_device = FALSE)
+    
     
     pdf(file.path(fig_dir, "usage.pdf"), width = 3.5, height = 8)
     orderby <- c("Mitotic_Cycling", "Mitotic_Arrest", "Interphase")
