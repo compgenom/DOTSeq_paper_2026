@@ -63,7 +63,7 @@ bash bulk/sra_download.sh \
 ```
 #### Preprocessing raw reads
 
-Before analysis, raw reads must be quality controlled, trimmed, and aligned to generate alignment files. Precomputed alignment files (`Aligned.sortedByCoord.out.bam`) are available on [Zenodo](https://doi.org/10.5281/zenodo.19266548) if you wish to skip this preprocessing step.
+Before analysis, raw reads must be quality controlled, trimmed, and aligned to generate alignment files. Precomputed alignment files (`*_Aligned.sortedByCoord.out.bam`) are available on [Zenodo](https://doi.org/10.5281/zenodo.19266548) if you wish to skip this preprocessing step.
 
 ```bash
 bash bulk/preprocessing_bulk.sh
