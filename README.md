@@ -44,8 +44,8 @@ bash ref/ref.sh
 
 ```bash
 Rscript ref/orf_annotation.R \
-  -a ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz \
   -s ref/MANE.GRCh38.v1.4.ensembl_rna.fna.gz \
+  -a ref/MANE.GRCh38.v1.4.ensembl_genomic.gtf.gz \
   -o ref
 ```
 
@@ -78,7 +78,7 @@ By default, the pipeline uses the `Aligned.sortedByCoord.out.bam` files to extra
 Rscript bulk/bulk_analysis.R \
   -ss 1 \
   -gr ref/gr_orfs.rds \
-  -bam data/bulk/alignment \
+  -bam data/bulk \
   -mat data/bulk/quantification \
   -o results/bulk
 ```
@@ -88,7 +88,6 @@ Alternatively, to start from precomputed ORF read counts, download the `bulk.rds
 ```bash
 Rscript bulk/bulk_analysis.R \
   -ss 2 \
-  -gr ref/gr_orfs.rds \
   -mat data/bulk/quantification \
   -o results/bulk
 ```

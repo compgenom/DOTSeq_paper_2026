@@ -25,6 +25,11 @@ set -euo pipefail
 # ---------------------------
 # Default parameters
 # ---------------------------
+mkdir -p "data"
+mkdir -p "data/bulk"
+mkdir -p "data/bulk/rna"
+mkdir -p "data/bulk/ribo"
+
 BULK_RNA_DIR="data/bulk/rna"
 BULK_RIBO_DIR="data/bulk/ribo"
 THREADS=16
@@ -47,7 +52,6 @@ done
 # ---------------------------
 mkdir -p "${BULK_RNA_DIR}/chx"
 mkdir -p "${BULK_RIBO_DIR}/chx"
-mkdir -p "${SC_DIR}"
 
 # ---------------------------
 # Bulk RNA-seq (CHX-treated)

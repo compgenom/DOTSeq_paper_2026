@@ -28,6 +28,8 @@ suppressPackageStartupMessages({
     library(splines)
     library(purrr)
     library(scales)
+    library(eulerr)
+    library(ggsignif)
     library(argparse)
 })
 
@@ -36,8 +38,11 @@ parser <- ArgumentParser(description = "DOTSeq bulk analysis")
 parser$add_argument("-ss", "--start", type = "integer", default = 1,
                     help = "Step to start the pipeline from")
 
+parser$add_argument("-gr", "--gr-dir", type = "character",
+                    default = "ref/gr_orfs.rds")
+
 parser$add_argument("-bam", "--bam-dir", type = "character",
-                    default = "data/bulk/alignment")
+                    default = "data/bulk")
 
 parser$add_argument("-mat", "--mat-dir", type = "character",
                     default = "data/bulk/quantification")
@@ -100,8 +105,8 @@ if (opt$start == 1) {
 }
 
 if (opt$start <=2) {
-  if (is.null(opt$mat_dir) || is.null(opt$out_dir) || is.null(opt$gr_dir)) {
-    stop("To start with precomputed per-ORF matrices, you must provide --gr-dir, --mat-dir and --out-dir")
+  if (is.null(opt$mat_dir) || is.null(opt$out_dir)) {
+    stop("To start with precomputed per-ORF matrices, you must provide --mat-dir and --out-dir")
   }
     
     # Step 3: Extract and inspect results from DOTSeq using the getContrasts() function
@@ -158,7 +163,7 @@ if (opt$start <=2) {
     )
     dev.off()
     
-    pdf(file.path(fig_dir, "heatmap.pdf"), width = 5, height = 5)
+    pdf(file.path(fig_dir, "heatmap.pdf"), width = 4, height = 9)
     plotDOT(
         plot_type = "heatmap", 
         results = results, 
@@ -168,15 +173,21 @@ if (opt$start <=2) {
         force_new_device = FALSE
     )
     dev.off()
+
+    mapping <- plotDOT(plot_type = "volcano", 
+                       results = results,
+                       id_mapping = TRUE,
+                       plot_params = list(color_by = "significance", top_hits = 3, legend_position = "topright"),
+                       force_new_device = FALSE)
     
-    pdf(file.path(fig_dir, "usage.pdf"), width = 5, height = 5)
+    pdf(file.path(fig_dir, "usage.pdf"), width = 3.5, height = 8)
     orderby <- c("Mitotic_Cycling", "Mitotic_Arrest", "Interphase")
     id <- "CSDE1"
     plotDOT(
         plot_type = "usage",
         data = getDOU(d), 
         gene_id = id, 
-        id_mapping = TRUE, 
+        id_mapping = mapping, 
         plot_params = list(order_by = orderby),
         force_new_device = FALSE
     )

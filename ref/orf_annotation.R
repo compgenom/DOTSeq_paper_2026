@@ -12,6 +12,9 @@
 
 suppressPackageStartupMessages({
     library(DOTSeq)
+    library(Matrix)
+    library(S4Vectors)
+    library(GenomicRanges)
     library(argparse)
 })
 
@@ -29,9 +32,10 @@ parser$add_argument("-o", "--out-dir", type = "character",
 opt <- parser$parse_args()
 
 gr <- getORFs(
-    sequences = opt$annotation,
-    annotation = opt$sequences,
+    sequences = opt$sequences,
+    annotation = opt$annotation,
     organism = "Homo sapiens",
+    circ_seqs = NULL,
     start_codons = "ATG",
     stop_codons = "TAA|TAG|TGA",
     min_len = 0,
@@ -41,4 +45,4 @@ gr <- getORFs(
     
 saveRDS(gr, file.path(opt$out_dir,"gr_orfs.rds"))
 
-message("ORF annotation done. ORF GRanges saved to", opt$out_dir)
+message("ORF annotation done. ORF GRanges saved to" opt$out_dir)

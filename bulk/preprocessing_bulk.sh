@@ -46,15 +46,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 # ---------------------------
-# Derived directories
-# ---------------------------
-ALIGN_DIR="${OUT_DIR}/alignment"
-TRIM_RNA_DIR="${OUT_DIR}/rna"
-TRIM_RIBO_DIR="${OUT_DIR}/ribo"
-
-mkdir -p "$ALIGN_DIR" "$TRIM_RNA_DIR" "$TRIM_RIBO_DIR"
-
-# ---------------------------
 # RNA processing
 # ---------------------------
 echo "Processing RNA-seq..."
@@ -66,14 +57,14 @@ for i in "${RNA_DIR}"/*.fastq.gz; do
 
   cutadapt -j "$THREADS" -m 15 -u 8 -e 0.1 --match-read-wildcards \
     -a TCGTATGCCGTCTTCTGCTTG -O 1 \
-    -o "${TRIM_RNA_DIR}/${base}.trimmed.fasta.gz" "$i"
+    -o "${RNA_DIR}/${base}.trimmed.fasta.gz" "$i"
 
   STAR --runMode alignReads \
     --runThreadN "$THREADS" \
     --genomeDir "$REF_DIR" \
-    --readFilesIn "${TRIM_RNA_DIR}/${base}.trimmed.fasta.gz" \
+    --readFilesIn "${RNA_DIR}/${base}.trimmed.fasta.gz" \
     --readFilesCommand zcat \
-    --outFileNamePrefix "${ALIGN_DIR}/${base}_" \
+    --outFileNamePrefix "${RNA_DIR}/${base}_" \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterType BySJout \
@@ -98,14 +89,14 @@ for i in "${RIBO_DIR}"/*.fastq.gz; do
 
   cutadapt -j "$THREADS" -m 15 -u 8 -e 0.1 --match-read-wildcards \
     -a TCGTATGCCGTCTTCTGCTTG -O 1 \
-    -o "${TRIM_RIBO_DIR}/${base}.trimmed.fasta.gz" "$i"
+    -o "${RIBO_DIR}/${base}.trimmed.fasta.gz" "$i"
 
   STAR --runMode alignReads \
     --runThreadN "$THREADS" \
     --genomeDir "$REF_DIR" \
-    --readFilesIn "${TRIM_RIBO_DIR}/${base}.trimmed.fasta.gz" \
+    --readFilesIn "${RIBO_DIR}/${base}.trimmed.fasta.gz" \
     --readFilesCommand zcat \
-    --outFileNamePrefix "${ALIGN_DIR}/${base}_" \
+    --outFileNamePrefix "${RIBO_DIR}/${base}_" \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterType BySJout \
