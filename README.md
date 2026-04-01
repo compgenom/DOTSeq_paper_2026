@@ -6,13 +6,11 @@ All precomputed datasets are available on [Zenodo](https://doi.org/10.5281/zenod
 
 ## CONTENTS
 
-- **Apptainer**: [app/](app/) — Build the container from an Apptainer definition file  
-- **Reference files**: [ref/](ref/) — Contains scripts to download reference annotations and transcript files, as well as metadata for both bulk and single-cell analyses
-- **Bulk Datasets**: [bulk/](bulk/) — Scripts to analyse bulk datasets from [Ly 2024](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA957808)
-- **Single-cell Datasets**: [sc/](sc/) — Quantification, aggregation, and visualization of single-cell Ribo-seq data from [VanInsberghe 2021](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA680481) 
-- **Benchmarking**: [benchmarking/](benchmarking/) — Scripts for generating simulated datasets and benchmarking DOTSeq across conditions  
-
----
+- **Apptainer**: [app/](app/) — Build the container from an Apptainer definition file. 
+- **Reference Files**: [ref/](ref/) — Contains scripts to download reference annotations and transcript files, as well as metadata for both bulk and single-cell analyses.
+- **Bulk Datasets**: [bulk/](bulk/) — Scripts to analyse bulk datasets from [Ly 2024](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA957808).
+- **Single-cell Datasets**: [sc/](sc/) — Quantification, aggregation, and visualization of single-cell Ribo-seq data from [VanInsberghe 2021](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA680481).
+- **Benchmarking**: [benchmarking/](benchmarking/) — Scripts for generating simulated datasets and benchmarking DOTSeq across conditions.
 
 ## WORKFLOW
 
@@ -51,6 +49,28 @@ Rscript ref/orf_annotation.R \
   -o ref
 ```
 
+### NOTES
+#### Data & directory setup
+
+All files are organised into a predefined directory structure to ensure compatibility with downstream steps:
+Running the preprocessing scripts will automatically create the required directories.
+If you use a custom directory structure or plan to [skip the download/ preprocessing steps](#Skipping-download-/-preprocessing), update paths accordingly when running scripts.
+
+#### Skipping download / preprocessing 
+
+If you prefer not to run the full pipeline, you can start from different stages by downloading the precomputed files available on [Zenodo](https://doi.org/10.5281/zenodo.19266548) accordingly:
+
+1. Start from aligned BAM files
+   - [Bulk](#Analysing-bulk-Ribo-seq):
+     `*_Aligned.sortedByCoord.out.bam` → place in `data/bulk`
+   - [Single-cell](#Analysing-single-cell-Ribo-seq):
+     `*_Aligned.sortedByCoord.out_CB.bam` → place in `data/sc/alignment`
+2. Start from ORF read counts
+   - [Bulk](#Analysing-bulk-Ribo-seq):
+     `bulk.rds` → place in `data/bulk/quantification`
+   - [Single-cell](#Analysing-single-cell-Ribo-seq):
+     `*_Aligned.sortedByCoord.out_CB_mat.rds` → place in `data/sc/quantification`
+
 ### 5. Bulk Ribo-seq analysis
 
 #### Downloading raw reads
@@ -66,9 +86,6 @@ bash bulk/sra_download.sh \
 #### Preprocessing raw reads
 
 Before analysis, raw reads must be quality controlled, trimmed, and aligned to generate alignment files.
-
-**NOTE**
-If you wish to skip this step, the precomputed alignment files (`*_Aligned.sortedByCoord.out.bam`) are available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
 
 ```bash
 bash bulk/preprocessing_bulk.sh
@@ -89,7 +106,7 @@ Rscript bulk/bulk_analysis.R \
   -o results/bulk
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `bulk.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place it in `data/bulk/quantification` and run:
+Alternatively, to start from precomputed ORF read counts:
 
 ```bash
 Rscript bulk/bulk_analysis.R \
@@ -97,12 +114,6 @@ Rscript bulk/bulk_analysis.R \
   -mat data/bulk/quantification \
   -o results/bulk
 ```
-
-##### Notes on directory settings
-All files will be organised into the predefined directory structure (e.g., `ref/`, and `data/bulk/`) to ensure compatibility with downstream preprocessing and analysis steps. 
-If you run the preprocessing steps, the required directory structure (e.g., `data/bulk/`) will be created automatically.
-If you prefer to use a different directory structure, or if you choose to skip the preprocessing step and download precomputed files from [Zenodo](https://doi.org/10.5281/zenodo.19266548), you will need to create the appropriate directories manually before placing the files. Please also modify the paths when running the scripts accordingly.
-
    
 ### 6. Single-cell Ribo-seq analysis
 
@@ -150,9 +161,6 @@ bash sc/sra_download_sc.sh \
 
 #### Generate the alignment files
 
-**NOTE**
-If you wish to skip this step, you can download the precomputed alignment files `*_Aligned.sortedByCoord.out_CB.bam` on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
-
 ```bash
 bash sc/scRiboSeq_manuscript/data_processing/preprocessing_sc.sh
 ```
@@ -172,7 +180,7 @@ Rscript sc/sc_analysis.R \
   -o results/sc
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `*_Aligned.sortedByCoord.out_CB_mat.rds` files from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place them in `data/sc/quantification`, and run:
+Alternatively, to start from precomputed ORF read counts:
 
 ```bash
 Rscript sc/sc_analysis.R \
@@ -208,3 +216,12 @@ gabrielle [dot] chieng [at] postgrad [dot] otago [dot] ac [dot] nz
 Chun Shen Lim, Gabrielle S. W. Chieng. (2026). 
 DOTSeq enables genome-wide detection of differential ORF usage. 
 BioRxiv. DOI: https://doi.org/10.1101/2025.09.24.678201
+
+## REFERENCE 
+Jimmy Ly, Kehui Xiang, Kuan-Chung Su, Gunter B Sissoko, David P Bartel, Iain M Cheeseman. (2024).
+Nuclear release of eIF1 restricts start-codon selection during mitosis.
+Nature. DOI: https://doi.org/10.1038/s41586-024-08088-3
+
+Michael VanInsberghe, Jeroen van den Berg, Amanda Andersson-Rolf, Hans Clevers, Alexander van Oudenaarden. (2021).
+Single-cell Ribo-seq reveals cell cycle-dependent translational pausing.
+Nature. DOI: https://doi.org/10.1038/s41586-021-03887-4

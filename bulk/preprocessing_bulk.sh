@@ -64,7 +64,7 @@ for i in "${RNA_DIR}"/*.fastq.gz; do
     --genomeDir "$REF_DIR" \
     --readFilesIn "${RNA_DIR}/${base}.trimmed.fasta.gz" \
     --readFilesCommand zcat \
-    --outFileNamePrefix "${RNA_DIR}/${base}_" \
+    --outFileNamePrefix "${OUT_DIR}/${base}_" \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterType BySJout \
@@ -96,7 +96,7 @@ for i in "${RIBO_DIR}"/*.fastq.gz; do
     --genomeDir "$REF_DIR" \
     --readFilesIn "${RIBO_DIR}/${base}.trimmed.fasta.gz" \
     --readFilesCommand zcat \
-    --outFileNamePrefix "${RIBO_DIR}/${base}_" \
+    --outFileNamePrefix "${OUT_DIR}/${base}_" \
     --outSAMtype BAM SortedByCoordinate \
     --quantMode TranscriptomeSAM GeneCounts \
     --outFilterType BySJout \

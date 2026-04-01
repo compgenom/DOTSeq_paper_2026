@@ -95,34 +95,18 @@ if (opt$start <=2) {
   `%||%` <- function(a, b) if (!is.null(a)) a else b
   printf <- function(...) cat(sprintf(...), "\n")
   
-  # Subset from initial successful completion of the transfer queue
-  selected_runs <- c(
-    "SRR13125084", "SRR13125088", "SRR13125092", "SRR13125094",
-    "SRR13125096", "SRR13125097", "SRR13125102", "SRR13125103",
-    "SRR13125104", "SRR14530593", "SRR14530595", "SRR14530596",
-    "SRR14530602", "SRR14530605", "SRR14530606")
-  
   ## SRA meta (expects: Run, cell_type, treatment, ...)
   sra <- read.csv("ref/SraRunTable_PRJNA680481.csv")
   sra <- sra[sra$cell_type == "hTERT RPE-1", , drop = FALSE]
-
+    
   ## Per-ORF matrices named "<Run>_Aligned.sortedByCoord.out_CB.mat.rds"
-  rds_files <- file.path(matrix_dir, paste0(selected_runs, "_Aligned.sortedByCoord.out_CB.mat.rds"))
+  rds_files <- list.files(opt$mat_dir, pattern = "_Aligned\\.sortedByCoord\\.out_CB\\.mat\\.rds$", full.names = TRUE)
   if (!length(rds_files)) stop("No per-ORF .rds matrices found.")
-  # Only keep runs present in sra
-  sra_sub <- sra[sra$Run %in% selected_runs, , drop = FALSE]
-  sra_sub$matrix <- file.path(matrix_dir, paste0(sra_sub$Run, "_Aligned.sortedByCoord.out_CB.mat.rds"))
+  mats_acc  <- vapply(strsplit(basename(rds_files), "_"), `[`, character(1), 1)
+  sra_sub <- sra[sra$Run %in% mats_acc, , drop = FALSE]
+  sra_sub$matrix <- file.path(opt$mat_dir, paste0(sra_sub$Run, "_Aligned.sortedByCoord.out_CB.mat.rds"))
   stopifnot(nrow(sra_sub) > 0, all(file.exists(sra_sub$matrix)))
   printf("Included runs: %d", nrow(sra_sub))
-    
-  # ## Per-ORF matrices named "<Run>_Aligned.sortedByCoord.out_CB.mat.rds"
-  # rds_files <- list.files(opt$mat_dir, pattern = "_Aligned\\.sortedByCoord\\.out_CB\\.mat\\.rds$", full.names = TRUE)
-  # if (!length(rds_files)) stop("No per-ORF .rds matrices found.")
-  # mats_acc  <- vapply(strsplit(basename(rds_files), "_"), `[`, character(1), 1)
-  # sra_sub <- sra[sra$Run %in% mats_acc, , drop = FALSE]
-  # sra_sub$matrix <- file.path(opt$mat_dir, paste0(sra_sub$Run, "_Aligned.sortedByCoord.out_CB.mat.rds"))
-  # stopifnot(nrow(sra_sub) > 0, all(file.exists(sra_sub$matrix)))
-  # printf("Included runs: %d", nrow(sra_sub))
   
   # Step 3: Load and merge per-ORF matrices with unified feature space
   
@@ -253,8 +237,40 @@ if (opt$start <=2) {
   s_m <- RunPCA(s_m)
   s_m <- FindNeighbors(s_m, dims = 1:20)
   s_m <- RunUMAP(s_m, dims = 1:20)
-  s_m <- FindClusters(s_m, resolution = 0.5)
+  s_m <- FindClusters(s_m, resolution = 0.5, algorithm = 4)
+                    
+  cl_m <- s_m$seurat_clusters
+  tr_m <- s_m$treatment
+    
+  nmi_m <- aricode::NMI(cl_m, tr_m, variant = "max")
+  ami_m <- aricode::AMI(cl_m, tr_m)
+  ari_m <- aricode::ARI(cl_m, tr_m)
+    
+  cat(sprintf("mORF-only:\n"))
+  cat(sprintf("  NMI = %.3f\n", nmi_m))
+  cat(sprintf("  AMI = %.3f\n", ami_m))
+  cat(sprintf("  ARI = %.3f\n\n", ari_m))
+                    
+  ## Permutation baseline for NMI/AMI/ARI (keeps cluster sizes fixed; shuffles Treatment)
+  set.seed(1)
+  B <- 500
+  nmib <- numeric(B); amib <- numeric(B); arib <- numeric(B)
+
+  for (b in seq_len(B)) {
+    tr_mb <- sample(tr_m)
+    nmib[b] <- aricode::NMI(cl_m, tr_mb, variant = "max")
+    amib[b] <- aricode::AMI(cl_m, tr_mb)
+    arib[b] <- aricode::ARI(cl_m, tr_mb)
+  }
+  quantile(amib, c(.5,.95,.99))
   
+  p_emp_m <- (sum(amib >= ami_m) + 1) / (length(amib) + 1)  # one-sided, clustering >= observed
+  p_two <- 2 * min(p_emp_m, 1 - p_emp_m)                  
+  p_emp_m
+
+  cat(sprintf("mORF-only:\n"))
+  cat(sprintf("  p = %.3f\n", p_emp_m))
+
   ## palette
   stage_colors <- c(
     "Interphase treatment"              = "#619CFF",
@@ -290,7 +306,40 @@ if (opt$start <=2) {
   s_u <- RunPCA(s_u, features = VariableFeatures(s_u), npcs = 30, verbose = FALSE)
   s_u <- FindNeighbors(s_u, reduction = "pca", dims = 1:20)
   s_u <- RunUMAP(s_u, reduction = "pca", dims = 1:20)
+  s_u <- FindClusters(s_u, resolution = 0.5, algorithm = 4)
+
+  cl_u <- s_u$seurat_clusters
+  tr_u <- s_u$treatment
+
+  nmi_u <- aricode::NMI(cl_u, tr_u, variant = "max")
+  ami_u <- aricode::AMI(cl_u, tr_u)
+  ari_u <- aricode::ARI(cl_u, tr_u)
+
+  cat(sprintf("uORF-only:\n"))
+  cat(sprintf("  NMI = %.3f\n", nmi_u))
+  cat(sprintf("  AMI = %.3f\n", ami_u))
+  cat(sprintf("  ARI = %.3f\n\n", ari_u))
+
+  ## Permutation baseline for NMI/AMI/ARI (keeps cluster sizes fixed; shuffles Treatment)
+  set.seed(1)
+  B <- 500
+  nmib <- numeric(B); amib <- numeric(B); arib <- numeric(B)
+
+  for (b in seq_len(B)) {
+    tr_ub <- sample(tr_u)
+    nmib[b] <- aricode::NMI(cl_u, tr_ub, variant = "max")
+    amib[b] <- aricode::AMI(cl_u, tr_ub)
+    arib[b] <- aricode::ARI(cl_u, tr_ub)
+  }
+  quantile(amib, c(.5,.95,.99))
   
+  p_emp_u <- (sum(amib >= ami_u) + 1) / (length(amib) + 1)  # one-sided, clustering >= observed
+  p_two <- 2 * min(p_emp_u, 1 - p_emp_u)                  
+  p_emp_u
+
+  cat(sprintf("uORF-only:\n"))
+  cat(sprintf("  p = %.3f\n", p_emp_u))          
+                    
   p_umap_uorf_ratio <- FeaturePlot(
     s_u, features = "uORF_mORF_ratio", reduction = "umap"
   ) + scale_color_viridis(option = "D") + 
@@ -304,8 +353,8 @@ if (opt$start <=2) {
   print(p_umap_uorf_ratio); print(p_umap_uorf_trt)
   
   # Step 7: Create a WNN joint manifold
-  ##     - mORF: SCTransform + PCA  (SCT_mORF)
-  ##     - uORF: LogNormalize + PCA (assay = "uORF")
+  ## - mORF: SCTransform + PCA  (SCT_mORF)
+  ## - uORF: LogNormalize + PCA (assay = "uORF")
   
   library(future)
   options(future.globals.maxSize = 1 * 1024^3)  # 1 GB limit
@@ -552,4 +601,4 @@ if (opt$start <=2) {
   ggsave(file.path(fig_dir, "loo_srr_emms.pdf"),    p_loo,           width = 4, height = 4)
 }
 
-sessionInfo()
+# sessionInfo()
