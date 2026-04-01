@@ -78,7 +78,7 @@ If you prefer not to run the full pipeline, you can start from different stages 
 For the **Bulk datasets**, only samples corresponding to **cycloheximide (CHX)-treated cells** are downloaded, as these are the conditions analysed in the manuscript. This represents a subset of the full dataset from the original study.
 
 ```bash
-bash bulk/sra_download.sh \
+bash bulk/sra_download_bulk.sh \
   --bulk_rna data/bulk/rna \
   --bulk_ribo data/bulk/ribo \
   --threads 16
