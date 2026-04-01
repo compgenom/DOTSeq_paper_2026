@@ -45,4 +45,4 @@ gr <- getORFs(
     
 saveRDS(gr, file.path(opt$out_dir,"gr_orfs.rds"))
 
-message("ORF annotation done. ORF GRanges saved to" opt$out_dir)
+message("ORF annotation done. ORF GRanges saved to ", opt$out_dir)

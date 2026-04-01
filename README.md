@@ -24,8 +24,10 @@ cd DOTSeq_paper_2026
 ```
 
 ### 2. Set up the computational environment
+
+To install the 
    
-Build the Apptainer image to ensure all dependencies are installed and enter the apptainer image:
+Build the Apptainer container to ensure all dependencies are installed and enter the Apptainer container:
 
 ```bash
 apptainer build app/dotseq.sif app/dotseq.def
@@ -59,7 +61,7 @@ For the **Bulk datasets**, only samples corresponding to **cycloheximide (CHX)-t
 bash bulk/sra_download.sh \
   --bulk_rna data/bulk/rna \
   --bulk_ribo data/bulk/ribo \
-  --threads 16 \
+  --threads 16
 ```
 #### Preprocessing raw reads
 
@@ -101,13 +103,60 @@ If you prefer to use a different directory structure, or if you choose to skip t
    
 ### 6. Single-cell Ribo-seq analysis
 
-For the **Single-cell datasets**, only data derived from **hTERT-RPE1 cells** are used for downstream analysis, consistent with the conditions presented in the manuscript.
+#### Installation 
 
-The preprocessing step to generate the alignment files for single-cell datasets was done using a modified Nextflow pipeline from [scRiboSeq_manuscript](https://github.com/mvanins/scRiboSeq_manuscript). This modified pipeline will be provided in a separate repository.
+The alignment files for single-cell datasets were prepared using a modified Nextflow pipeline from [scRiboSeq_manuscript](https://github.com/mvanins/scRiboSeq_manuscript). 
 
-To reproduce the manuscript figures, download the precomputed alignment files `*_Aligned.sortedByCoord.out_CB.bam` from [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
+**Important**
+If you have been running the bulk analysis inside the Apptainer container, exit the container first using `exit`. Then install Nextflow using Miniforge3:
 
-By default, the script starts from the read counting step. The recommended UMI threshold is 50, but this can be adjusted.
+```bash
+# Install Miniforge3 
+wget https://github.com/conda-forge/miniforge/releases/download/24.7.1-2/Miniforge3-24.7.1-2-Linux-x86_64.sh
+bash Miniforge3-24.7.1-2-Linux-x86_64.sh -b -p $HOME/miniforge3
+
+# Initialise Conda 
+eval "$(/$HOME/miniforge3/bin/conda shell.bash hook)"
+
+# Create a conda environment 
+conda create --name nf
+conda activate nf
+
+# Install Nextflow and Java
+conda install -c bioconda -c conda-forge nextflow openjdk=17 -y # Java version that is compatible with the nextflow version used in this pipeline
+```
+
+#### Clone the forked repository
+
+The modified Nextflow pipeline can be found in this forked [repository](https://github.com/compgenom/scRiboSeq_manuscript).
+
+```bash
+git clone https://github.com/compgenom/scRiboSeq_manuscript.git sc/scRiboSeq_manuscript
+```
+
+#### Download the raw sequencing reads
+
+For the **Single-cell datasets**, only data derived from **hTERT-RPE1 cells** are used, consistent with the manuscript.
+
+```bash
+bash sc/sra_download_sc.sh \
+  --sc_dir sc/scRiboSeq_manuscript/data_processing \
+  --threads 16 \
+  --jobs 2
+```
+
+#### Generate the alignment files
+
+```bash
+bash sc/scRiboSeq_manuscript/data_processing/preprocessing_sc.sh
+```
+
+If you wish to skip this step, you can download the precomputed alignment files `*_Aligned.sortedByCoord.out_CB.bam` on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
+
+#### Analysing single-cell Ribo-seq
+
+After obtaining the alignment files, re-launch the Apptainer container `apptainer shell app/dotseq.sif` and run the analysis script to reproduce the manuscript figures.
+By default, the script starts from the read counting step. The UMI threshold used in the manuscript is 100, but this can be adjusted.
 
 ```bash
 Rscript sc/sc_analysis.R \
@@ -115,18 +164,18 @@ Rscript sc/sc_analysis.R \
   -gr ref/gr_orfs.rds \
   -bam data/sc/alignment \
   -mat data/sc/quantification \
-  -umi 50 \
+  -umi 100 \
   -o results/sc
 ```
 
-Alternatively, to start from precomputed ORF read counts, download the `*_Aligned.sortedByCoord.out_CB_mat.rds` and `gr_orfs.rds` file from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place them in `data/sc/quantification` and `ref/` respectively, and run:
+Alternatively, to start from precomputed ORF read counts, download the `*_Aligned.sortedByCoord.out_CB_mat.rds` files from [Zenodo](https://doi.org/10.5281/zenodo.19266548), place them in `data/sc/quantification`, and run:
 
 ```bash
 Rscript sc/sc_analysis.R \
   -ss 2 \
   -gr ref/gr_orfs.rds \
   -mat data/sc/quantification \
-  -umi 50 \
+  -umi 100 \
   -o results/sc
 ```
    
