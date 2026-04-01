@@ -25,9 +25,9 @@ cd DOTSeq_paper_2026
 
 ### 2. Set up the computational environment
 
-To install the 
-   
-Build the Apptainer container to ensure all dependencies are installed and enter the Apptainer container:
+To install Apptainer, please refer to the official [Apptainer installation guide](https://apptainer.org/docs/admin/main/installation.html) and follow the instructions for your operating system.
+
+Build the Apptainer container to install all required dependencies, then enter the container:
 
 ```bash
 apptainer build app/dotseq.sif app/dotseq.def
@@ -65,7 +65,10 @@ bash bulk/sra_download.sh \
 ```
 #### Preprocessing raw reads
 
-Before analysis, raw reads must be quality controlled, trimmed, and aligned to generate alignment files. Precomputed alignment files (`*_Aligned.sortedByCoord.out.bam`) are available on [Zenodo](https://doi.org/10.5281/zenodo.19266548) if you wish to skip this preprocessing step.
+Before analysis, raw reads must be quality controlled, trimmed, and aligned to generate alignment files.
+
+**NOTE**
+If you wish to skip this step, the precomputed alignment files (`*_Aligned.sortedByCoord.out.bam`) are available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
 
 ```bash
 bash bulk/preprocessing_bulk.sh
@@ -75,7 +78,7 @@ bash bulk/preprocessing_bulk.sh
 
 Once preprocessing is complete, run the analysis scripts to quantify ORFs, aggregate gene-level counts, and generate visualisations. 
 
-By default, the pipeline uses the `*_Aligned.sortedByCoord.out.bam` files to extract exonic reads using `getExonicReads()` from [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq), producing `*_Aligned.sortedByCoord.out.exonic.sorted.bam`. These filtered BAM files are then used for read counting via [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq)'s `countReads()` function. Precomputed exonic BAM files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
+By default, the pipeline starts by using the `*_Aligned.sortedByCoord.out.bam` files to extract exonic reads using `getExonicReads()` from [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq), producing `*_Aligned.sortedByCoord.out.exonic.sorted.bam`. These filtered BAM files are then used for read counting via [DOTSeq](https://doi.org/doi:10.18129/B9.bioc.DOTSeq)'s `countReads()` function. Precomputed exonic BAM files are also available on [Zenodo](https://doi.org/10.5281/zenodo.19266548).
 
 ```bash
 Rscript bulk/bulk_analysis.R \
@@ -147,11 +150,12 @@ bash sc/sra_download_sc.sh \
 
 #### Generate the alignment files
 
+**NOTE**
+If you wish to skip this step, you can download the precomputed alignment files `*_Aligned.sortedByCoord.out_CB.bam` on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
+
 ```bash
 bash sc/scRiboSeq_manuscript/data_processing/preprocessing_sc.sh
 ```
-
-If you wish to skip this step, you can download the precomputed alignment files `*_Aligned.sortedByCoord.out_CB.bam` on [Zenodo](https://doi.org/10.5281/zenodo.19266548) and place them in `data/sc/alignment`.
 
 #### Analysing single-cell Ribo-seq
 
