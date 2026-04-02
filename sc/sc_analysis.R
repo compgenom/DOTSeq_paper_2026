@@ -280,9 +280,7 @@ if (opt$start <=2) {
   )
   
   ## UMAPs (mORF)
-  p_umap_ratio <- FeaturePlot(
-    s_m, features = "uORF_mORF_ratio", reduction = "umap"
-  ) + scale_color_viridis(option = "D") +
+  p_umap_ratio <- FeaturePlot(s_m, features = "uORF_mORF_ratio", reduction = "umap") +
     labs(title = "UMAP coloured by uORF proportion (mORF data)") +
     theme_classic()
   
@@ -340,9 +338,7 @@ if (opt$start <=2) {
   cat(sprintf("uORF-only:\n"))
   cat(sprintf("  p = %.3f\n", p_emp_u))          
                     
-  p_umap_uorf_ratio <- FeaturePlot(
-    s_u, features = "uORF_mORF_ratio", reduction = "umap"
-  ) + scale_color_viridis(option = "D") + 
+  p_umap_uorf_ratio <- FeaturePlot(s_u, features = "uORF_mORF_ratio", reduction = "umap") + 
     labs(title = "UMAP coloured by uORF proportion (uORF data)") + theme_classic()
   
   p_umap_uorf_trt <- DimPlot(s_u, reduction = "umap", group.by = "treatment") +
